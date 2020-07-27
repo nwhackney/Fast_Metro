@@ -66,6 +66,7 @@ void run_config()
 	else
 	{
 		crystal.init(L,N);
+		crystal.print_data("init_data.dat");
 		
 	}
 
@@ -103,7 +104,6 @@ void run_config()
 		slope=10.0/(slp);
 		Temp=1.0/cosh(w*slope*((double) t));
 		crystal.Metropolis(Temp,Edat,accepted);
-
 
 		if (t%1000==0)
 		{
@@ -156,7 +156,7 @@ void run_config()
 
 int main()
 {
-	srand(time(0));
+	srand(time(NULL));
 	run_config();
 
 	return 0;
