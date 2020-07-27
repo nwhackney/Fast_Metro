@@ -40,7 +40,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		std::vector<site> saved = lattice;
 
-		int flag=rand()%4;
+		int flag=rand()%3;
 
 		if (flag==0) // Rotation
 		{
