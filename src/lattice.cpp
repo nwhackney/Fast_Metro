@@ -67,7 +67,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		{
 			accepted[2]+=1.0;
 
-			int unocc= (rand()+getpid())%(V-N);
+			int unocc= rand()%(V-N);
 			int m=vac[unocc];
 
 			double phi=lattice[n].angle;
@@ -98,7 +98,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		{
 			accepted[4]+=1.0;
 
-			int unocc= (rand()+getpid())%(V-N);
+			int unocc= rand()%(V-N);
 			int m=vac[unocc];
 
 			flip(n);
