@@ -1,5 +1,6 @@
 #include "../include/lattice.hpp"
 #include <cstdlib>
+#include <unistd.h>
 
 double Box_Muller(double mu, double sigma)
 {
@@ -40,7 +41,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		std::vector<site> saved = lattice;
 
-		int flag=rand()%3;
+		int flag=rand()%4;
 
 		if (flag==0) // Rotation
 		{
@@ -210,7 +211,7 @@ void lattice::init(int lattice_size, int Number)
 	int count=0;
 	while(count!=N)
 	{
-		int n=rand()%V;
+		int n=(rand()+getpid())%V;
 		if (lattice[n].occ==1) {continue;}
 
 		double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
