@@ -156,7 +156,7 @@ void run_config()
 
 int main()
 {
-	srand(time(NULL));
+	//srand(time(NULL));
 	run_config();
 
 	return 0;
