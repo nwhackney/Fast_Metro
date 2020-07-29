@@ -105,12 +105,12 @@ void run_config()
 		Temp=1.0/cosh(w*slope*((double) t));
 		crystal.Metropolis(Temp,Edat,accepted);
 
-		if (t%10000==0)
-		{
-			stringstream look;
-			look<<"snap_"<<t;
-			crystal.print_gnu(look.str());
-		}
+		// if (t%100000==0)
+		// {
+		// 	stringstream look;
+		// 	look<<"snap_"<<<<t;
+		// 	crystal.print_gnu(look.str());
+		// }
 
 		if (t%1000==0)
 		{
@@ -163,7 +163,6 @@ void run_config()
 
 int main()
 {
-	cout<<"THis is a Change"<<endl;
 	//srand(time(NULL));
 	run_config();
 
