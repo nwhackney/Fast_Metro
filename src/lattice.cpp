@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <sstream>
+#include <limits>
 
 double Box_Muller(double mu, double sigma)
 {
