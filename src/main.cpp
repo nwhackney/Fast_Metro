@@ -105,7 +105,7 @@ void run_config()
 		Temp=1.0/cosh(w*slope*((double) t));
 		crystal.Metropolis(Temp,Edat,accepted);
 
-		if (t%100==0)
+		if (t%10000==0)
 		{
 			stringstream look;
 			look<<"snap_"<<t;
