@@ -128,7 +128,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		// 		accepted[5]+=1.0;
 		// 	}
 
-		}
+		//}
 		else if (flag==1) // Local Translation
 		{
 			accepted[6]+=1.0;
