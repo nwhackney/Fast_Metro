@@ -352,7 +352,6 @@ void lattice::print_gnu(std::string file_name)
 	       dx,
 	       dy;
 
-	int plaq=1;
 	for (int i=0; i<V; i++)
 	{
 			if (lattice[i].occ==1)
@@ -366,8 +365,6 @@ void lattice::print_gnu(std::string file_name)
 				theta=lattice[i].angle;
 				dx=cos(theta);
 				dy=sin(theta);
-
-				double E=H_local(i);
 
 				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc 'black'"<<std::endl;
 			}
