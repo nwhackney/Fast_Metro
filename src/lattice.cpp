@@ -285,10 +285,10 @@ void lattice::restart(int Length, int Number, std::string infile)
      {
           if (raw[i+2]!=-1.0)
           {
-          	int n=int(raw[i]);
-          	int m=int(raw[i+1]);
+          	int n=(int) raw[i];
+          	int m=(int) raw[i+1];
           	int pos=n*L+m;
-          	double theta=double(raw[i+2]);
+          	double theta=(double) raw[i+2];
                lattice[pos].occ=1;
                lattice[pos].angle=theta;
 

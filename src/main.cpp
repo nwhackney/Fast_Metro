@@ -62,6 +62,7 @@ void run_config()
 	if (restart=="yes")
 	{
 		crystal.restart(L,N,in_file);
+		//crystal.print_data("init");
 	}
 	else
 	{
@@ -108,7 +109,7 @@ void run_config()
 		if (t%100000==0)
 		{
 			stringstream look;
-			look<<"snap_"<<<<t;
+			look<<"snap_"<<t;
 			crystal.print_gnu(look.str());
 		}
 
@@ -163,7 +164,7 @@ void run_config()
 
 int main()
 {
-	//srand(time(NULL));
+	srand(time(NULL));
 	run_config();
 
 	return 0;
