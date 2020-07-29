@@ -1,6 +1,8 @@
 #include "../include/lattice.hpp"
 #include <cstdlib>
 #include <unistd.h>
+#include <fstream>
+#include <sstream>
 
 double Box_Muller(double mu, double sigma)
 {

@@ -6,7 +6,7 @@
 #include <time.h> 
 #include <limits>
 
-#include "lattice.cpp"
+#include "../include/lattice.hpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 
 using namespace std;
