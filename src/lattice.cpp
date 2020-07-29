@@ -66,70 +66,70 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 			else {accepted[1]+=1.0;}
 		}
-		else if (flag==1) // Translation
-		{
-			accepted[2]+=1.0;
+		// else if (flag==1) // Translation
+		// {
+		// 	accepted[2]+=1.0;
 
-			int unocc= rand()%(V-N);
-			int m=vac[unocc];
+		// 	int unocc= rand()%(V-N);
+		// 	int m=vac[unocc];
 
-			double phi=lattice[n].angle;
-			flip(n);
-			rotate(n,0.0);
-			flip(m);
-			rotate(m,phi);
+		// 	double phi=lattice[n].angle;
+		// 	flip(n);
+		// 	rotate(n,0.0);
+		// 	flip(m);
+		// 	rotate(m,phi);
 
-			Trial_E=H_local(m);
+		// 	Trial_E=H_local(m);
 
-			double delE = Trial_E - E;
-			double alpha = ((double) rand()/(double)RAND_MAX);
+		// 	double delE = Trial_E - E;
+		// 	double alpha = ((double) rand()/(double)RAND_MAX);
 
-			double U= exp(-1*delE/T);
-			if (alpha > fmin(1.0,U))
-			{
-				lattice=saved;
-			}
-			else
-			{
-				occ[i]=m;
-				vac[unocc]=n;
-				accepted[3]+=1.0;
-			}
+		// 	double U= exp(-1*delE/T);
+		// 	if (alpha > fmin(1.0,U))
+		// 	{
+		// 		lattice=saved;
+		// 	}
+		// 	else
+		// 	{
+		// 		occ[i]=m;
+		// 		vac[unocc]=n;
+		// 		accepted[3]+=1.0;
+		// 	}
+
+		// }
+		// else if (flag==2) // Translation + Rotation
+		// {
+		// 	accepted[4]+=1.0;
+
+		// 	int unocc= rand()%(V-N);
+		// 	int m=vac[unocc];
+
+		// 	flip(n);
+		// 	rotate(n,0.0);
+		// 	flip(m);
+
+		// 	double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+		// 	rotate(m,theta);
+
+		// 	Trial_E=H_local(m);
+
+		// 	double delE = Trial_E - E;
+		// 	double alpha = ((double) rand()/(double)RAND_MAX);
+
+		// 	double U= exp(-1*delE/T);
+		// 	if (alpha > fmin(1.0,U))
+		// 	{
+		// 		lattice=saved;
+		// 	}
+		// 	else
+		// 	{
+		// 		occ[i]=m;
+		// 		vac[unocc]=n;
+		// 		accepted[5]+=1.0;
+		// 	}
 
 		}
-		else if (flag==2) // Translation + Rotation
-		{
-			accepted[4]+=1.0;
-
-			int unocc= rand()%(V-N);
-			int m=vac[unocc];
-
-			flip(n);
-			rotate(n,0.0);
-			flip(m);
-
-			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-			rotate(m,theta);
-
-			Trial_E=H_local(m);
-
-			double delE = Trial_E - E;
-			double alpha = ((double) rand()/(double)RAND_MAX);
-
-			double U= exp(-1*delE/T);
-			if (alpha > fmin(1.0,U))
-			{
-				lattice=saved;
-			}
-			else
-			{
-				occ[i]=m;
-				vac[unocc]=n;
-				accepted[5]+=1.0;
-			}
-
-		}
-		else if (flag==3) // Local Translation
+		else if (flag==1) // Local Translation
 		{
 			accepted[6]+=1.0;
 
