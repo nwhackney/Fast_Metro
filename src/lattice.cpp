@@ -138,8 +138,9 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			else if (slide==2){slot=(n-1)%V;} // Left
 			else if (slide==3){slot=(n+1)%V;} // Right
 
+			int VS=V-N;
 			int m=-1;
-			for (int j=0; j<vac.size(); j++)
+			for (int j=0; j<VS; j++)
 			{
 				if (vac[j]==slot)
 				{
@@ -180,7 +181,7 @@ void lattice::check()
 {
 	//std::cout<<"Volume: "<<V<<" Array Size: "<<lattice.size()<<std::endl;
 	int c=0;
-	for (int i=0; i<occ.size(); i++)
+	for (int i=0; i<N; i++)
 	{
 		int test=occ[i];
 		if (lattice[test].occ==1)
@@ -273,9 +274,11 @@ void lattice::restart(int Length, int Number, std::string infile)
 	occ.resize(N);
 	vac.resize(V-N);
 
+	int raw_size=raw.size();
+
 	int count=0;
 
-     for (int i=0; i<=raw.size()-4; i+=4)
+     for (int i=0; i<=raw_size-4; i+=4)
      {
           if (raw[i+2]!=-1.0)
           {
@@ -310,7 +313,7 @@ void lattice::print_data(std::string file_name)
 	std::ofstream out;
 	out.open(file.str());
 
-	for (int i=0; i<lattice.size(); i++)
+	for (int i=0; i<V; i++)
 	{
 		int x=i%L;
 		int y=i/L;
