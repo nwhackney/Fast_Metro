@@ -79,7 +79,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			lattice[n].angle=0.0;
 
 			lattice[m].occ=1;
-			lattice[m].angle=theta;
+			lattice[m].angle=phi;
 
 			Trial_E=H_local(m);
 
