@@ -89,6 +89,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
+				lattice.clear();
 				lattice=saved;
 			}
 			else
