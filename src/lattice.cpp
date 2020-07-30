@@ -66,27 +66,26 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 			else {accepted[1]+=1.0;}
 		}
+
 		else if (flag==1) // Translation
 		{
-			accepted[2]+=1.0;
-
-			int unocc= (int) (rand()%(V-N));
-			int m=vac[unocc];
+			int spot=rand()%V;
+			if (lattice[spot].occ==1){continue;}
 
 			double phi=lattice[n].angle;
 
 			lattice[n].occ=0;
 			lattice[n].angle=0.0;
 
-			lattice[m].occ=1;
-			lattice[m].angle=phi;
+			lattice[spot].occ=1;
+			lattice[spot].angle=phi;
 
-			Trial_E=H_local(m);
+			Trial_E=H_local(spot);
 
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double) RAND_MAX);
 
-			double U= exp(-1*delE/T);
+			double U= exp(-1.0*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
 				lattice.clear();
@@ -94,12 +93,46 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 			else
 			{
-				occ[i]=m;
-				vac[unocc]=n;
+				occ[i]=spot;
+				//vac[unocc]=n;
 				accepted[3]+=1.0;
 			}
-
 		}
+
+		// else if (flag==1) // Translation
+		// {
+		// 	accepted[2]+=1.0;
+
+		// 	int unocc= (int) (rand()%(V-N));
+		// 	int m=vac[unocc];
+
+		// 	double phi=lattice[n].angle;
+
+		// 	lattice[n].occ=0;
+		// 	lattice[n].angle=0.0;
+
+		// 	lattice[m].occ=1;
+		// 	lattice[m].angle=phi;
+
+		// 	Trial_E=H_local(m);
+
+		// 	double delE = Trial_E - E;
+		// 	double alpha = ((double) rand()/(double) RAND_MAX);
+
+		// 	double U= exp(-1.0*delE/T);
+		// 	if (alpha > fmin(1.0,U))
+		// 	{
+		// 		lattice.clear();
+		// 		lattice=saved;
+		// 	}
+		// 	else
+		// 	{
+		// 		occ[i]=m;
+		// 		vac[unocc]=n;
+		// 		accepted[3]+=1.0;
+		// 	}
+
+		// }
 		else if (flag==2) // Translation + Rotation
 		{
 			accepted[4]+=1.0;
