@@ -43,7 +43,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		std::vector<site> saved = lattice;
 
-		int flag=rand()%1;
+		int flag=rand()%4;
 
 		if (flag==0) // Rotation
 		{
@@ -427,19 +427,25 @@ double lattice::H_local(int i)
 	    left=(i-1)%V,
 	    right=(i+1)%V;
 
-	    double weight_up=((double) lattice[i].occ)*((double) lattice[up].occ);
-	    double H1 = (J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))+K)*weight_up;                    			    // Up Bond
+    if (up<0){up=up+V;}
+    if (left<0){left=left+V;}
 
-	    double weight_down=((double) lattice[i].occ)*((double) lattice[down].occ);
-	    double H2 = (J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))+K)*weight_down; 		                        // Down Bond
+    double x = (double) (i%L);
+    double y = (double) (i/L);
 
-	    double weight_left=((double) lattice[i].occ)*((double) lattice[left].occ);
-	    double H3 =(J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))+K)*weight_left;	                                  // Left Bond
+    double weight_up=((double) lattice[i].occ)*((double) lattice[up].occ);
+    double H1 = (J*cos(lattice[i].angle-lattice[up].angle+f*x)+K)*weight_up;                    			    // Up Bond
 
-	    double weight_right=((double) lattice[i].occ)*((double) lattice[right].occ);
-	    double H4 =(J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))+K)*weight_right;                    	         // Right Bond
+    double weight_down=((double) lattice[i].occ)*((double) lattice[down].occ);
+    double H2 = (J*cos(lattice[i].angle-lattice[down].angle-f*x)+K)*weight_down; 		                        // Down Bond
 
-	    static double H = H1 + H2 + H3 + H4;
+    double weight_left=((double) lattice[i].occ)*((double) lattice[left].occ);
+    double H3 =(J*cos(lattice[i].angle-lattice[left].angle-f*y)+K)*weight_left;	                                  // Left Bond
+
+    double weight_right=((double) lattice[i].occ)*((double) lattice[right].occ);
+    double H4 =(J*cos(lattice[i].angle-lattice[right].angle+f*y)+K)*weight_right;                    	         // Right Bond
+
+	double H = H1 + H2 + H3 + H4;
 
 	return H;
 }
