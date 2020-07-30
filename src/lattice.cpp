@@ -39,12 +39,11 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 	for (int i=0; i<N; i++)
 	{
 		int n=occ[i];
-		double E=H_local(n),
-		       Trial_E;
+		double E=H_local(n);
 
 		std::vector<site> saved = lattice;
 
-		int flag=rand()%2;
+		int flag=rand()%1;
 
 		if (flag==0) // Rotation
 		{
@@ -54,7 +53,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double theta = Box_Muller(lattice[n].angle,width);
 
 			rotate(n,theta);
-			Trial_E=H_local(n);
+			double Trial_E=H_local(n);
 
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
@@ -81,7 +80,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			lattice.at(n)=Null;
 			lattice.at(m)=Spin;
 
-			Trial_E=H_local(m);
+			double Trial_E=H_local(m);
 
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double) RAND_MAX);
@@ -115,7 +114,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			lattice.at(n)=Null;
 			lattice.at(m)=Spin;
 
-			Trial_E=H_local(m);
+			double Trial_E=H_local(m);
 
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
@@ -170,7 +169,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 			occ[i]=slot; vac[m]=n;
 
-			Trial_E=H_local(slot);
+			double Trial_E=H_local(slot);
 
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
@@ -335,7 +334,8 @@ void lattice::print_data(std::string file_name)
 		}
 		else
 		{
-			out << x << " " << y << " " << lattice[i].angle << " " << strain(i) << std::endl;
+			//out << x << " " << y << " " << lattice[i].angle << " " << strain(i) << std::endl;
+			out << x << " " << y << " " << lattice[i].angle << std::endl;
 		}
 	}
 }
@@ -422,17 +422,24 @@ double lattice::angle(int i)
 
 double lattice::H_local(int i)
 {
-	double H=0.0;
-
 	int up=(i-L)%V,
 	    down=(i+L)%V,
 	    left=(i-1)%V,
 	    right=(i+1)%V;
 
-	    H+=(J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))+K)*lattice[i].occ*lattice[up].occ; 			    // Up Bond
-	    H+=(J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))+K)*lattice[i].occ*lattice[down].occ; 		    // Down Bond
-	    H+=(J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))+K)*lattice[i].occ*lattice[left].occ;		    // Left Bond
-	    H+=(J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))+K)*lattice[i].occ*lattice[right].occ; 	         // Right Bond
+	    double weight_up=((double) lattice[i].occ)*((double) lattice[up].occ);
+	    double H1 = (J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))+K)*weight_up;                    			    // Up Bond
+
+	    double weight_down=((double) lattice[i].occ)*((double) lattice[down].occ);
+	    double H2 = (J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))+K)*weight_down; 		                        // Down Bond
+
+	    double weight_left=((double) lattice[i].occ)*((double) lattice[left].occ);
+	    double H3 =(J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))+K)*weight_left;	                                  // Left Bond
+
+	    double weight_right=((double) lattice[i].occ)*((double) lattice[right].occ);
+	    double H4 =(J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))+K)*weight_right;                    	         // Right Bond
+
+	    static double H = H1 + H2 + H3 + H4;
 
 	return H;
 }
