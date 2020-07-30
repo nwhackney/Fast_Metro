@@ -66,21 +66,22 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 			else {accepted[1]+=1.0;}
 		}
-
 		else if (flag==1) // Translation
 		{
-			int spot=rand()%V;
-			if (lattice[spot].occ==1){continue;}
+			accepted[2]+=1.0;
+
+			int unocc= (int) (rand()%(V-N));
+			int m=vac[unocc];
 
 			double phi=lattice[n].angle;
 
-			lattice[n].occ=0;
-			lattice[n].angle=0.0;
+			site Null; Null.occ=0; Null.angle=0.0;
+			site Spin; Spin.occ=1; Spin.angle=phi;
 
-			lattice[spot].occ=1;
-			lattice[spot].angle=phi;
+			lattice[n]=Null;
+			lattice[m]=Spin;
 
-			Trial_E=H_local(spot);
+			Trial_E=H_local(m);
 
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double) RAND_MAX);
@@ -93,46 +94,12 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 			else
 			{
-				occ[i]=spot;
-				//vac[unocc]=n;
+				occ[i]=m;
+				vac[unocc]=n;
 				accepted[3]+=1.0;
 			}
+
 		}
-
-		// else if (flag==1) // Translation
-		// {
-		// 	accepted[2]+=1.0;
-
-		// 	int unocc= (int) (rand()%(V-N));
-		// 	int m=vac[unocc];
-
-		// 	double phi=lattice[n].angle;
-
-		// 	lattice[n].occ=0;
-		// 	lattice[n].angle=0.0;
-
-		// 	lattice[m].occ=1;
-		// 	lattice[m].angle=phi;
-
-		// 	Trial_E=H_local(m);
-
-		// 	double delE = Trial_E - E;
-		// 	double alpha = ((double) rand()/(double) RAND_MAX);
-
-		// 	double U= exp(-1.0*delE/T);
-		// 	if (alpha > fmin(1.0,U))
-		// 	{
-		// 		lattice.clear();
-		// 		lattice=saved;
-		// 	}
-		// 	else
-		// 	{
-		// 		occ[i]=m;
-		// 		vac[unocc]=n;
-		// 		accepted[3]+=1.0;
-		// 	}
-
-		// }
 		else if (flag==2) // Translation + Rotation
 		{
 			accepted[4]+=1.0;
@@ -140,12 +107,13 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			int unocc= rand()%(V-N);
 			int m=vac[unocc];
 
-			flip(n);
-			rotate(n,0.0);
-			flip(m);
-
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-			rotate(m,theta);
+
+			site Null; Null.occ=0; Null.angle=0.0;
+			site Spin; Spin.occ=1; Spin.angle=theta;
+
+			lattice[n]=Null;
+			lattice[m]=Spin;
 
 			Trial_E=H_local(m);
 
@@ -193,8 +161,12 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			std::vector<int> vac_saved = vac;
 
 			double theta = lattice[n].angle;
-			lattice[n].angle=0.0; lattice[n].occ=0;
-			lattice[slot].angle=theta; lattice[slot].occ=1;
+
+			site Null; Null.occ=0; Null.angle=0.0;
+			site Spin; Spin.occ=1; Spin.angle=theta;
+
+			lattice[n]=Null;
+			lattice[slot]=Spin;
 
 			occ[i]=slot; vac[m]=n;
 
@@ -462,7 +434,6 @@ double lattice::H_local(int i)
 	    H+=(J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))+K)*lattice[i].occ*lattice[left].occ;		    // Left Bond
 	    H+=(J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))+K)*lattice[i].occ*lattice[right].occ; 	         // Right Bond
 
-
 	return H;
 }
 
@@ -494,7 +465,7 @@ double lattice::strain(int i)
 	    H+=J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))*lattice[i].occ*lattice[up].occ; 			    // Up Bond
 	    H+=J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))*lattice[i].occ*lattice[down].occ; 		    // Down Bond
 	    H+=J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))*lattice[i].occ*lattice[left].occ;		    // Left Bond
-	    H+=J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))*lattice[i].occ*lattice[right].occ; 	         // Right Bond
+	    H+=J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))*lattice[i].occ*lattice[right].occ; 	    // Right Bond
 
 	    int neighbor=lattice[up].occ+lattice[down].occ+lattice[left].occ+lattice[right].occ;
 	    double num= (double) neighbor;
