@@ -3,7 +3,7 @@
 #include <sstream>
 #include <math.h>
 #include <stdlib.h>
-#include <time.h> 
+#include <time.h>
 #include <limits>
 
 #include "../include/lattice.hpp"
@@ -67,8 +67,7 @@ void run_config()
 	else
 	{
 		crystal.init(L,N);
-		crystal.print_data("init_data.dat");
-		
+		crystal.print_data("init_data.dat");	
 	}
 
 	crystal.print_gnu("init");
@@ -106,12 +105,12 @@ void run_config()
 		Temp=1.0/cosh(w*slope*((double) t));
 		crystal.Metropolis(Temp,Edat,accepted);
 
-		if (t%100000==0)
-		{
-			stringstream look;
-			look<<"snap_"<<t;
-			crystal.print_gnu(look.str());
-		}
+		// if (t%100000==0)
+		// {
+		// 	stringstream look;
+		// 	look<<"snap_"<<t;
+		// 	crystal.print_gnu(look.str());
+		// }
 
 		if (t%1000==0)
 		{
