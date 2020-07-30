@@ -78,8 +78,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=phi;
 
-			lattice[n]=Null;
-			lattice[m]=Spin;
+			lattice.at(n)=Null;
+			lattice.at(m)=Spin;
 
 			Trial_E=H_local(m);
 
@@ -112,8 +112,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
 
-			lattice[n]=Null;
-			lattice[m]=Spin;
+			lattice.at(n)=Null;
+			lattice.at(m)=Spin;
 
 			Trial_E=H_local(m);
 
@@ -165,8 +165,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
 
-			lattice[n]=Null;
-			lattice[slot]=Spin;
+			lattice.at(n)=Null;
+			lattice.at(slot)=Spin;
 
 			occ[i]=slot; vac[m]=n;
 
