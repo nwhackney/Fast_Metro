@@ -49,7 +49,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		{
 			accepted[0]+=1.0;
 
-			double width = 0.4*exp(T);
+			double width = 0.45*exp(2.0*T);
 			double theta = Box_Muller(lattice[n].angle,width);
 
 			rotate(n,theta);
@@ -132,17 +132,24 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 
 		}
-		else if (flag==3) // Local Translation
+		else // Local Translation
 		{
-			accepted[6]+=1.0;
 
 			int slide=rand()%4;
 			int slot;
 
-			if (slide==0){slot=(n-L)%V;}      // Up
+			if (slide==0)                     // Up
+			{
+				slot=(n-L)%V;
+				if (slot<0){slot=slot+V;}
+			}
 			else if (slide==1){slot=(n+L)%V;} // Down
-			else if (slide==2){slot=(n-1)%V;} // Left
-			else if (slide==3){slot=(n+1)%V;} // Right
+			else if (slide==2)                // Left
+			{
+				slot=(n-1)%V;
+				if (slot<0){slot=slot+V;}
+			}
+			else              {slot=(n+1)%V;} // Right
 
 			int VS=V-N;
 			int m=-1;
@@ -155,6 +162,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			}
 
 			if (m==-1) {continue;}
+
+			accepted[6]+=1.0;
 
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
@@ -184,6 +193,117 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			else {accepted[7]+=1.0;}
 		}
 
+		///////////////////////////////////////// Following Code Block was a First Attempt at Improving the Local Swap Move But it is substantially slower ... ///////////
+
+		// else if (flag==3) // Local Translation
+		// {
+		// 	accepted[6]+=1.0;
+
+		// 	std::vector<int> surface;
+
+		// 	for (int i=0; i<N; i++)
+		// 	{
+		// 		int s=occ[i];
+		// 		int up=(s-L)%V,
+	 //    			down=(s+L)%V,
+	 //    			left=(s-1)%V,
+	 //    			right=(s+1)%V;
+
+  //   				if (up<0){up=up+V;}
+  //   				if (left<0){left=left+V;}
+				
+		// 		if (lattice[up].occ+lattice[down].occ+lattice[left].occ+lattice[right].occ != 4)
+		// 		{
+		// 			surface.push_back(i);
+		// 		}
+		// 	}
+
+		// 	int ss=rand()%surface.size();
+		// 	int surf_spin=occ[surface[ss]];
+
+		// 	int slide=rand()%4;
+		// 	int slot;
+
+		// 	if (slide==0)                              // Up
+		// 	{
+		// 		slot=(surf_spin-L)%V;
+		// 		if (slot<0){slot=slot+V;}
+		// 	}     
+		// 	else if (slide==1){slot=(surf_spin+L)%V;} // Down
+		// 	else if (slide==2)                        // Left
+		// 	{
+		// 		slot=(surf_spin-1)%V;
+		// 		if (slot<0){slot=slot+V;}
+		// 	}
+		// 	else {slot=(surf_spin+1)%V;} // Right
+
+		// 	if (lattice[slot].occ==0)
+		// 	{
+		// 		int VS=V-N;
+		// 		int m=-1;
+		// 		for (int j=0; j<VS; j++)
+		// 		{
+		// 			if (vac[j]==slot)
+		// 			{
+		// 				m=j;
+		// 			}
+		// 		}
+
+		// 		if (m==-1) {continue;}
+
+		// 		std::vector<int> occ_saved = occ;
+		// 		std::vector<int> vac_saved = vac;
+
+		// 		double theta = lattice[surf_spin].angle;
+
+		// 		site Null; Null.occ=0; Null.angle=0.0;
+		// 		site Spin; Spin.occ=1; Spin.angle=theta;
+
+		// 		lattice.at(surf_spin)=Null;
+		// 		lattice.at(slot)=Spin;
+
+		// 		occ[surface[ss]]=slot; vac[m]=surf_spin;
+
+		// 		double Trial_E=H_local(slot);
+
+		// 		double delE = Trial_E - E;
+		// 		double alpha = ((double) rand()/(double)RAND_MAX);
+
+		// 		double U= exp(-1*delE/T);
+		// 		if (alpha > fmin(1.0,U))
+		// 		{
+		// 			lattice=saved;
+		// 			occ=occ_saved;
+		// 			vac=vac_saved;
+		// 		}
+		// 		else {accepted[7]+=1.0;}
+		// 	}
+		// 	else if (lattice[slot].occ==1)
+		// 	{
+		// 		E=(H_local(slot)+H_local(surf_spin));
+
+		// 		double theta1 = lattice[surf_spin].angle;
+		// 		double theta2 = lattice[slot].angle;
+
+		// 		site orig; orig.occ=1; orig.angle=theta1;
+		// 		site Spin; Spin.occ=1; Spin.angle=theta2;
+
+		// 		lattice.at(surf_spin)=Spin;
+		// 		lattice.at(slot)=orig;
+
+		// 		double Trial_E=(H_local(slot)+H_local(surf_spin));
+
+		// 		double delE = Trial_E - E;
+		// 		double alpha = ((double) rand()/(double)RAND_MAX);
+
+		// 		double U= exp(-1*delE/T);
+		// 		if (alpha > fmin(1.0,U))
+		// 		{
+		// 			lattice=saved;
+		// 		}
+		// 		else {accepted[7]+=1.0;}
+		// 	}
+		// }
 	}
 }
 
@@ -334,8 +454,8 @@ void lattice::print_data(std::string file_name)
 		}
 		else
 		{
-			//out << x << " " << y << " " << lattice[i].angle << " " << strain(i) << std::endl;
-			out << x << " " << y << " " << lattice[i].angle << std::endl;
+			out << x << " " << y << " " << lattice[i].angle << " " << strain(i) << std::endl;
+			//out << x << " " << y << " " << lattice[i].angle << std::endl;
 		}
 	}
 }
@@ -355,8 +475,8 @@ void lattice::print_gnu(std::string file_name)
 	out<<"set terminal png"<<std::endl;
 	out<<"set output '"<<png.str()<<"'"<<std::endl;
 	out<<"set key off"<<std::endl;
-	out<<"set xrange [0:27]"<<std::endl;
-	out<<"set yrange [0:27]"<<std::endl;
+	out<<"set xrange [0:253]"<<std::endl;
+	out<<"set yrange [0:253]"<<std::endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<std::endl;
 
 	double d=2.5;
@@ -475,13 +595,16 @@ double lattice::strain(int i)
 	    left=(i-1)%V,
 	    right=(i+1)%V;
 
-	    H+=J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))*lattice[i].occ*lattice[up].occ; 			    // Up Bond
-	    H+=J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))*lattice[i].occ*lattice[down].occ; 		    // Down Bond
-	    H+=J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))*lattice[i].occ*lattice[left].occ;		    // Left Bond
-	    H+=J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))*lattice[i].occ*lattice[right].occ; 	    // Right Bond
+    if (up<0){up=up+V;}
+    if (left<0){left=left+V;}
 
-	    int neighbor=lattice[up].occ+lattice[down].occ+lattice[left].occ+lattice[right].occ;
-	    double num= (double) neighbor;
+    H+=J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))*lattice[i].occ*lattice[up].occ; 			    // Up Bond
+    H+=J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))*lattice[i].occ*lattice[down].occ; 		    // Down Bond
+    H+=J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))*lattice[i].occ*lattice[left].occ;		    // Left Bond
+    H+=J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))*lattice[i].occ*lattice[right].occ; 	    // Right Bond
+
+    int neighbor=lattice[up].occ+lattice[down].occ+lattice[left].occ+lattice[right].occ;
+    double num= (double) neighbor;
 
 
 	return H/num;
