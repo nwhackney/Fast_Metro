@@ -31,7 +31,7 @@ double Box_Muller(double mu, double sigma)
 	return z0 * sigma + mu;
 }
 
-void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, double &w_it) // Accepted: (move 0 tried, move 0 accepted, move 1 tried, move 1 accepted ...)
+void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, double width) // Accepted: (move 0 tried, move 0 accepted, move 1 tried, move 1 accepted ...)
 {
 	double Total_Energy=H();
 	Efile<<Total_Energy<<std::endl;
@@ -49,7 +49,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		{
 			accepted[0]+=1.0;
 
-			double width = exp(T);
+			//double width = exp(T);
 
 			double theta = Box_Muller(lattice[n].angle,width);
 
