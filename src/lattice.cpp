@@ -47,7 +47,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		if (flag==0) // Rotation
 		{
-			accepted[0]+=1.0;
+			//accepted[0]+=1.0;
 
 			double width = 3.14; //exp(T);
 
@@ -68,7 +68,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		}
 		else if (flag==1) // Translation
 		{
-			accepted[2]+=1.0;
+			//accepted[2]+=1.0;
 
 			int unocc= (int) (rand()%(V-N));
 			int m=vac[unocc];
@@ -96,13 +96,13 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			{
 				occ[i]=m;
 				vac[unocc]=n;
-				accepted[3]+=1.0;
+				//accepted[3]+=1.0;
 			}
 
 		}
 		else if (flag==2) // Translation + Rotation
 		{
-			accepted[4]+=1.0;
+			//accepted[4]+=1.0;
 
 			int unocc= rand()%(V-N);
 			int m=vac[unocc];
@@ -129,7 +129,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			{
 				occ[i]=m;
 				vac[unocc]=n;
-				accepted[5]+=1.0;
+				//accepted[5]+=1.0;
 			}
 
 		}
@@ -164,7 +164,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 			if (m==-1) {continue;}
 
-			accepted[6]+=1.0;
+			//accepted[6]+=1.0;
 
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
@@ -191,7 +191,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				occ=occ_saved;
 				vac=vac_saved;
 			}
-			else {accepted[7]+=1.0;}
+			//else {accepted[7]+=1.0;}
 		}
 
 		///////////////////////////////////////// Following Code Block was a First Attempt at Improving the Local Swap Move But it is substantially slower ... ///////////

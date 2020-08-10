@@ -117,10 +117,10 @@ void run_config()
 
 		if (t%1000==0)
 		{
-			rot_acc<<t<<" "<<accepted[1]/accepted[0]<<endl;
-			tran_acc<<t<<" "<<accepted[3]/accepted[2]<<endl;
-			glide_acc<<t<<" "<<accepted[5]/accepted[4]<<endl;
-			loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
+			// rot_acc<<t<<" "<<accepted[1]/accepted[0]<<endl;
+			// tran_acc<<t<<" "<<accepted[3]/accepted[2]<<endl;
+			// glide_acc<<t<<" "<<accepted[5]/accepted[4]<<endl;
+			// loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		}
 
 		if (t%50000==0)
