@@ -142,20 +142,23 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			std::cout<<"d"<<std::endl;
 			int slide=rand()%4;
 			int slot;
-
+			std::cout<<"d1"<<std::endl;
 			if (slide==0)                     // Up
 			{
 				slot=(n-L)%V;
 				if (slot<0){slot=slot+V;}
 			}
+			std::cout<<"d2"<<std::endl;
 			else if (slide==1){slot=(n+L)%V;} // Down
+			std::cout<<"d3"<<std::endl;
 			else if (slide==2)                // Left
 			{
 				slot=(n-1)%V;
 				if (slot<0){slot=slot+V;}
 			}
+			std::cout<<"d4"<<std::endl;
 			else              {slot=(n+1)%V;} // Right
-
+			std::cout<<"d5"<<std::endl;
 			int VS=V-N;
 			int m=-1;
 			for (int j=0; j<VS; j++)
@@ -165,29 +168,29 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 					m=j;
 				}
 			}
-
+			std::cout<<"d6"<<std::endl;
 			if (m==-1) {continue;}
-
+			std::cout<<"d7"<<std::endl;
 			accepted[6]+=1.0;
-
+			std::cout<<"d8"<<std::endl;
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
-
+			std::cout<<"d9"<<std::endl;
 			double theta = lattice[n].angle;
-
+			std::cout<<"d10"<<std::endl;
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
-
+			std::cout<<"d11"<<std::endl;
 			lattice.at(n)=Null;
 			lattice.at(slot)=Spin;
-
+			std::cout<<"d12"<<std::endl;
 			occ[i]=slot; vac[m]=n;
-
+			std::cout<<"d13"<<std::endl;
 			double Trial_E=H_local(slot);
-
+			std::cout<<"d14"<<std::endl;
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
-
+			std::cout<<"d15"<<std::endl;
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
@@ -196,6 +199,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				vac=vac_saved;
 			}
 			else {accepted[7]+=1.0;}
+			std::cout<<"d16"<<std::endl;
 		}
 	}
 	std::cout<<"Exiting Sweep"<<std::endl;
