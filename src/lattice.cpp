@@ -47,30 +47,22 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		if (flag==0) // Rotation
 		{
-			std::cout<<"a"<<std::endl;
 			accepted[0]+=1.0;
-			std::cout<<"a1"<<std::endl;
 			double width = exp(T);
-			std::cout<<"a2"<<std::endl;
 			double theta = Box_Muller(lattice[n].angle,width);
-			std::cout<<"a3"<<std::endl;
 			rotate(n,theta);
 			double Trial_E=H_local(n);
-			std::cout<<"a4"<<std::endl;
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
-			std::cout<<"a5"<<std::endl;
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
 				lattice=saved;
 			}
 			else {accepted[1]+=1.0;}
-			std::cout<<"a6"<<std::endl;
 		}
 		else if (flag==1) // Translation
 		{
-			std::cout<<"b"<<std::endl;
 			accepted[2]+=1.0;
 
 			int unocc= (int) (rand()%(V-N));
@@ -105,7 +97,6 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		}
 		else if (flag==2) // Translation + Rotation
 		{
-			std::cout<<"c"<<std::endl;
 			accepted[4]+=1.0;
 
 			int unocc= rand()%(V-N);
@@ -139,10 +130,9 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		}
 		else // Local Translation
 		{
-			std::cout<<"d"<<std::endl;
 			int slide=rand()%4;
 			int slot;
-			std::cout<<"d1"<<std::endl;
+			
 			if (slide==0)                     // Up
 			{
 				slot=(n-L)%V;
@@ -164,16 +154,16 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 					m=j;
 				}
 			}
-			std::cout<<"d6"<<std::endl;
+			
 			if (m==-1) {continue;}
-			std::cout<<"d7"<<std::endl;
+			
 			accepted[6]+=1.0;
-			std::cout<<"d8"<<std::endl;
+			
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
-			std::cout<<"d9"<<std::endl;
+			
 			double theta = lattice[n].angle;
-			std::cout<<"d10"<<std::endl;
+			
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
 			std::cout<<"d11"<<std::endl;
@@ -181,12 +171,12 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			lattice.at(slot)=Spin;
 			std::cout<<"d12"<<std::endl;
 			occ[i]=slot; vac[m]=n;
-			std::cout<<"d13"<<std::endl;
+			
 			double Trial_E=H_local(slot);
-			std::cout<<"d14"<<std::endl;
+			
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
-			std::cout<<"d15"<<std::endl;
+
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
