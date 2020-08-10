@@ -148,17 +148,13 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				slot=(n-L)%V;
 				if (slot<0){slot=slot+V;}
 			}
-			std::cout<<"d2"<<std::endl;
 			else if (slide==1){slot=(n+L)%V;} // Down
-			std::cout<<"d3"<<std::endl;
 			else if (slide==2)                // Left
 			{
 				slot=(n-1)%V;
 				if (slot<0){slot=slot+V;}
 			}
-			std::cout<<"d4"<<std::endl;
 			else              {slot=(n+1)%V;} // Right
-			std::cout<<"d5"<<std::endl;
 			int VS=V-N;
 			int m=-1;
 			for (int j=0; j<VS; j++)
