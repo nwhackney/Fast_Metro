@@ -25,7 +25,7 @@ public:
 	void print_data(std::string file_name);
 	void print_gnu(std::string file_name);
 
-	void Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted,double width);
+	void Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted);
 	void check();
 
 	void rotate(int i, double theta);

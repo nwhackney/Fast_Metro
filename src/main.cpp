@@ -105,8 +105,8 @@ void run_config()
 	{
 		//slope=10.0/((double) (Time));
 		slope=10.0/(slp);
-		Temp=1.0/cosh(0.4*slope*((double) t));     //temporarily re-purposing the width variable from the config file to be the width of the angle picking gaussian. Here I hard-coded in the normal w=0.4 for the temperature thing but this will have to be reset
-		crystal.Metropolis(Temp,Edat,accepted,w);
+		Temp=1.0/cosh(w*slope*((double) t));     //temporarily re-purposing the width variable from the config file to be the width of the angle picking gaussian. Here I hard-coded in the normal w=0.4 for the temperature thing but this will have to be reset
+		crystal.Metropolis(Temp,Edat,accepted);
 
 		// if (t%100000==0)
 		// {
@@ -133,7 +133,7 @@ void run_config()
 
 	for (int t=0; t<=end_time; t++)
 	{
-		crystal.Metropolis(0.0,Edat,accepted,w);
+		crystal.Metropolis(0.0,Edat,accepted);
 	}
 
 	rot_acc.close(); tran_acc.close(); glide_acc.close(); loc_acc.close();
