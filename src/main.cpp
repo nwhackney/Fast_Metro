@@ -6,6 +6,7 @@
 #include <time.h>
 #include <limits>
 
+//#include "../include/gsl_rng.h"
 #include "../include/lattice.hpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 
@@ -56,6 +57,8 @@ void run_config()
 	string out_file=outp->as<string>();
 	string in_file=i->as<string>();
 
+	//gsl_rng * r = gsl_rng_alloc (gsl_rng_taus);
+
 	lattice crystal;
 	crystal.set_const(J,K,f);
 
@@ -102,8 +105,8 @@ void run_config()
 	{
 		//slope=10.0/((double) (Time));
 		slope=10.0/(slp);
-		Temp=1.0/cosh(w*slope*((double) t));
-		crystal.Metropolis(Temp,Edat,accepted);
+		Temp=1.0/cosh(0.4*slope*((double) t));     //temporarily re-purposing the width variable from the config file to be the width of the angle picking gaussian. Here I hard-coded in the normal w=0.4 for the temperature thing but this will have to be reset
+		crystal.Metropolis(Temp,Edat,accepted,w);
 
 		// if (t%100000==0)
 		// {
@@ -130,7 +133,7 @@ void run_config()
 
 	for (int t=0; t<=end_time; t++)
 	{
-		crystal.Metropolis(0.0,Edat,accepted);
+		crystal.Metropolis(0.0,Edat,accepted,w);
 	}
 
 	rot_acc.close(); tran_acc.close(); glide_acc.close(); loc_acc.close();
@@ -163,7 +166,6 @@ void run_config()
 
 int main()
 {
-	srand(time(NULL));
 	run_config();
 
 	return 0;
