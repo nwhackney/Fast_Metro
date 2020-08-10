@@ -35,7 +35,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 {
 	double Total_Energy=H();
 	Efile<<Total_Energy<<std::endl;
-	std::cout<<"Entering Sweep Loop"<<std::endl;
+
 	for (int i=0; i<N; i++)
 	{
 		int n=occ[i];
@@ -48,12 +48,16 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		if (flag==0) // Rotation
 		{
 			accepted[0]+=1.0;
-			double width = exp(T);
+
+			double width = 0.45*exp(2.0*T);
 			double theta = Box_Muller(lattice[n].angle,width);
+
 			rotate(n,theta);
 			double Trial_E=H_local(n);
+
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
+
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
@@ -130,9 +134,10 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		}
 		else // Local Translation
 		{
+
 			int slide=rand()%4;
 			int slot;
-			
+
 			if (slide==0)                     // Up
 			{
 				slot=(n-L)%V;
@@ -145,6 +150,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				if (slot<0){slot=slot+V;}
 			}
 			else              {slot=(n+1)%V;} // Right
+
 			int VS=V-N;
 			int m=-1;
 			for (int j=0; j<VS; j++)
@@ -154,26 +160,26 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 					m=j;
 				}
 			}
-			
+
 			if (m==-1) {continue;}
-			
+
 			accepted[6]+=1.0;
-			
+
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
-			
+
 			double theta = lattice[n].angle;
-			
+
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
-			std::cout<<"d11"<<std::endl;
+
 			lattice.at(n)=Null;
 			lattice.at(slot)=Spin;
-			std::cout<<"d12"<<std::endl;
+
 			occ[i]=slot; vac[m]=n;
-			
+
 			double Trial_E=H_local(slot);
-			
+
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
 
@@ -185,10 +191,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				vac=vac_saved;
 			}
 			else {accepted[7]+=1.0;}
-			std::cout<<"d16"<<std::endl;
 		}
 	}
-	std::cout<<"Exiting Sweep"<<std::endl;
 }
 
 void lattice::check()
