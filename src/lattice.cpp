@@ -35,7 +35,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 {
 	double Total_Energy=H();
 	Efile<<Total_Energy<<std::endl;
-
+	std::cout<<"Entering Sweep Loop"<<std::endl;
 	for (int i=0; i<N; i++)
 	{
 		int n=occ[i];
@@ -47,28 +47,31 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		if (flag==0) // Rotation
 		{
-			//accepted[0]+=1.0;
-
-			double width = 3.14; //exp(T);
-
+			std::cout<<"a"<<std::endl;
+			accepted[0]+=1.0;
+			std::cout<<"a1"<<std::endl;
+			double width = exp(T);
+			std::cout<<"a2"<<std::endl;
 			double theta = Box_Muller(lattice[n].angle,width);
-
+			std::cout<<"a3"<<std::endl;
 			rotate(n,theta);
 			double Trial_E=H_local(n);
-
+			std::cout<<"a4"<<std::endl;
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
-
+			std::cout<<"a5"<<std::endl;
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
 				lattice=saved;
 			}
 			else {accepted[1]+=1.0;}
+			std::cout<<"a6"<<std::endl;
 		}
 		else if (flag==1) // Translation
 		{
-			//accepted[2]+=1.0;
+			std::cout<<"b"<<std::endl;
+			accepted[2]+=1.0;
 
 			int unocc= (int) (rand()%(V-N));
 			int m=vac[unocc];
@@ -96,13 +99,14 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			{
 				occ[i]=m;
 				vac[unocc]=n;
-				//accepted[3]+=1.0;
+				accepted[3]+=1.0;
 			}
 
 		}
 		else if (flag==2) // Translation + Rotation
 		{
-			//accepted[4]+=1.0;
+			std::cout<<"c"<<std::endl;
+			accepted[4]+=1.0;
 
 			int unocc= rand()%(V-N);
 			int m=vac[unocc];
@@ -129,13 +133,13 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			{
 				occ[i]=m;
 				vac[unocc]=n;
-				//accepted[5]+=1.0;
+				accepted[5]+=1.0;
 			}
 
 		}
 		else // Local Translation
 		{
-
+			std::cout<<"d"<<std::endl;
 			int slide=rand()%4;
 			int slot;
 
@@ -164,7 +168,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 			if (m==-1) {continue;}
 
-			//accepted[6]+=1.0;
+			accepted[6]+=1.0;
 
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
@@ -191,121 +195,10 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				occ=occ_saved;
 				vac=vac_saved;
 			}
-			//else {accepted[7]+=1.0;}
+			else {accepted[7]+=1.0;}
 		}
-
-		///////////////////////////////////////// Following Code Block was a First Attempt at Improving the Local Swap Move But it is substantially slower ... ///////////
-
-		// else if (flag==3) // Local Translation
-		// {
-		// 	accepted[6]+=1.0;
-
-		// 	std::vector<int> surface;
-
-		// 	for (int i=0; i<N; i++)
-		// 	{
-		// 		int s=occ[i];
-		// 		int up=(s-L)%V,
-	 //    			down=(s+L)%V,
-	 //    			left=(s-1)%V,
-	 //    			right=(s+1)%V;
-
-  //   				if (up<0){up=up+V;}
-  //   				if (left<0){left=left+V;}
-				
-		// 		if (lattice[up].occ+lattice[down].occ+lattice[left].occ+lattice[right].occ != 4)
-		// 		{
-		// 			surface.push_back(i);
-		// 		}
-		// 	}
-
-		// 	int ss=rand()%surface.size();
-		// 	int surf_spin=occ[surface[ss]];
-
-		// 	int slide=rand()%4;
-		// 	int slot;
-
-		// 	if (slide==0)                              // Up
-		// 	{
-		// 		slot=(surf_spin-L)%V;
-		// 		if (slot<0){slot=slot+V;}
-		// 	}     
-		// 	else if (slide==1){slot=(surf_spin+L)%V;} // Down
-		// 	else if (slide==2)                        // Left
-		// 	{
-		// 		slot=(surf_spin-1)%V;
-		// 		if (slot<0){slot=slot+V;}
-		// 	}
-		// 	else {slot=(surf_spin+1)%V;} // Right
-
-		// 	if (lattice[slot].occ==0)
-		// 	{
-		// 		int VS=V-N;
-		// 		int m=-1;
-		// 		for (int j=0; j<VS; j++)
-		// 		{
-		// 			if (vac[j]==slot)
-		// 			{
-		// 				m=j;
-		// 			}
-		// 		}
-
-		// 		if (m==-1) {continue;}
-
-		// 		std::vector<int> occ_saved = occ;
-		// 		std::vector<int> vac_saved = vac;
-
-		// 		double theta = lattice[surf_spin].angle;
-
-		// 		site Null; Null.occ=0; Null.angle=0.0;
-		// 		site Spin; Spin.occ=1; Spin.angle=theta;
-
-		// 		lattice.at(surf_spin)=Null;
-		// 		lattice.at(slot)=Spin;
-
-		// 		occ[surface[ss]]=slot; vac[m]=surf_spin;
-
-		// 		double Trial_E=H_local(slot);
-
-		// 		double delE = Trial_E - E;
-		// 		double alpha = ((double) rand()/(double)RAND_MAX);
-
-		// 		double U= exp(-1*delE/T);
-		// 		if (alpha > fmin(1.0,U))
-		// 		{
-		// 			lattice=saved;
-		// 			occ=occ_saved;
-		// 			vac=vac_saved;
-		// 		}
-		// 		else {accepted[7]+=1.0;}
-		// 	}
-		// 	else if (lattice[slot].occ==1)
-		// 	{
-		// 		E=(H_local(slot)+H_local(surf_spin));
-
-		// 		double theta1 = lattice[surf_spin].angle;
-		// 		double theta2 = lattice[slot].angle;
-
-		// 		site orig; orig.occ=1; orig.angle=theta1;
-		// 		site Spin; Spin.occ=1; Spin.angle=theta2;
-
-		// 		lattice.at(surf_spin)=Spin;
-		// 		lattice.at(slot)=orig;
-
-		// 		double Trial_E=(H_local(slot)+H_local(surf_spin));
-
-		// 		double delE = Trial_E - E;
-		// 		double alpha = ((double) rand()/(double)RAND_MAX);
-
-		// 		double U= exp(-1*delE/T);
-		// 		if (alpha > fmin(1.0,U))
-		// 		{
-		// 			lattice=saved;
-		// 		}
-		// 		else {accepted[7]+=1.0;}
-		// 	}
-		// }
 	}
+	std::cout<<"Exiting Sweep"<<std::endl;
 }
 
 void lattice::check()
