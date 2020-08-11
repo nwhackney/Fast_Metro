@@ -103,13 +103,10 @@ void run_config()
 
 	for (int t=restart_t; t<Time; t++)
 	{
-		//slope=10.0/((double) (Time));
 		slope=10.0/(slp);
-		Temp=1.0/cosh(w*slope*((double) t));     //temporarily re-purposing the width variable from the config file to be the width of the angle picking gaussian. Here I hard-coded in the normal w=0.4 for the temperature thing but this will have to be reset
+		Temp=1.0/cosh(w*slope*((double) t));
 		
-		std::cout<<"Entering Metropolis"<<std::endl;
 		crystal.Metropolis(Temp,Edat,accepted);
-		std::cout<<"Exiting Metropolis"<<std::endl;
 
 		// if (t%100000==0)
 		// {

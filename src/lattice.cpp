@@ -35,7 +35,6 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 {
 	double Total_Energy=H();
 	Efile<<Total_Energy<<std::endl;
-
 	for (int i=0; i<N; i++)
 	{
 		int n=occ[i];
@@ -48,16 +47,12 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		if (flag==0) // Rotation
 		{
 			accepted[0]+=1.0;
-
-			double width = 0.45*exp(2.0*T);
+			double width = 1.57; //exp(T);
 			double theta = Box_Muller(lattice[n].angle,width);
-
 			rotate(n,theta);
 			double Trial_E=H_local(n);
-
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
-
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
@@ -134,10 +129,9 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		}
 		else // Local Translation
 		{
-
 			int slide=rand()%4;
 			int slot;
-
+			
 			if (slide==0)                     // Up
 			{
 				slot=(n-L)%V;
@@ -150,7 +144,6 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				if (slot<0){slot=slot+V;}
 			}
 			else              {slot=(n+1)%V;} // Right
-
 			int VS=V-N;
 			int m=-1;
 			for (int j=0; j<VS; j++)
@@ -160,26 +153,26 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 					m=j;
 				}
 			}
-
+			
 			if (m==-1) {continue;}
-
+			
 			accepted[6]+=1.0;
-
+			
 			std::vector<int> occ_saved = occ;
 			std::vector<int> vac_saved = vac;
-
+			
 			double theta = lattice[n].angle;
-
+			
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
-
+			
 			lattice.at(n)=Null;
 			lattice.at(slot)=Spin;
-
+			
 			occ[i]=slot; vac[m]=n;
-
+			
 			double Trial_E=H_local(slot);
-
+			
 			double delE = Trial_E - E;
 			double alpha = ((double) rand()/(double)RAND_MAX);
 
@@ -230,7 +223,8 @@ void lattice::init(int lattice_size, int Number)
 	int count=0;
 	while(count!=N)
 	{
-		int n=(rand()+getpid())%V;
+		int n=rand()%V;
+		if (n<0){n=n+V;}
 		if (lattice[n].occ==1) {continue;}
 
 		double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
