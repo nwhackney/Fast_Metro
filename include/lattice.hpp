@@ -2,7 +2,7 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
-#include "gsl/gsl_rng.h"
+#include "../include/gsl_rng.h"
 
 class lattice
 {
