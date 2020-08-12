@@ -5,7 +5,7 @@
 #include <sstream>
 #include <limits>
 
-double Box_Muller(double mu, double sigma)
+double Box_Muller(double mu, double sigma, gsl_rng * rng)
 {
 	static const double epsilon = std::numeric_limits<double>::min();
 	static const double two_pi = 2.0*3.1416;
@@ -20,8 +20,10 @@ double Box_Muller(double mu, double sigma)
 	double u1, u2;
 	do
 	 {
-	   u1 = rand() * (1.0 / RAND_MAX);
-	   u2 = rand() * (1.0 / RAND_MAX);
+	   //u1 = rand() * (1.0 / RAND_MAX);
+	   //u2 = rand() * (1.0 / RAND_MAX);
+	 	u1 = gsl_rng_uniform(rng);
+	 	u2 = gsl_rng_uniform(rng);
 	 }
 	while ( u1 <= epsilon );
 
@@ -31,7 +33,7 @@ double Box_Muller(double mu, double sigma)
 	return z0 * sigma + mu;
 }
 
-void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted) // Accepted: (move 0 tried, move 0 accepted, move 1 tried, move 1 accepted ...)
+void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng) // Accepted: (move 0 tried, move 0 accepted, move 1 tried, move 1 accepted ...)
 {
 	double Total_Energy=H();
 	Efile<<Total_Energy<<std::endl;
@@ -42,17 +44,19 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		std::vector<site> saved = lattice;
 
-		int flag=rand()%4;
+		//int flag=rand()%4;
+		int flag=gsl_rng_get(rng)%4;
 
 		if (flag==0) // Rotation
 		{
 			accepted[0]+=1.0;
 			double width = 1.57; //exp(T);
-			double theta = Box_Muller(lattice[n].angle,width);
+			double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
 			rotate(n,theta);
 			double Trial_E=H_local(n);
 			double delE = Trial_E - E;
-			double alpha = ((double) rand()/(double)RAND_MAX);
+			//double alpha = ((double) rand()/(double)RAND_MAX);
+			double alpha = gsl_rng_uniform(rng);
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
@@ -64,7 +68,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		{
 			accepted[2]+=1.0;
 
-			int unocc= (int) (rand()%(V-N));
+			int unocc= gsl_rng_get(rng)%(V-N);
 			int m=vac[unocc];
 
 			double phi=lattice[n].angle;
@@ -78,7 +82,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double Trial_E=H_local(m);
 
 			double delE = Trial_E - E;
-			double alpha = ((double) rand()/(double) RAND_MAX);
+			//double alpha = ((double) rand()/(double) RAND_MAX);
+			double alpha = gsl_rng_uniform(rng);
 
 			double U= exp(-1.0*delE/T);
 			if (alpha > fmin(1.0,U))
@@ -98,10 +103,10 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		{
 			accepted[4]+=1.0;
 
-			int unocc= rand()%(V-N);
+			int unocc= gsl_rng_get(rng)%(V-N);
 			int m=vac[unocc];
 
-			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			double theta = gsl_rng_uniform(rng)*6.283185307179586;
 
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
@@ -112,7 +117,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double Trial_E=H_local(m);
 
 			double delE = Trial_E - E;
-			double alpha = ((double) rand()/(double)RAND_MAX);
+			double alpha = gsl_rng_uniform(rng);
 
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
@@ -129,7 +134,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		}
 		else // Local Translation
 		{
-			int slide=rand()%4;
+			int slide=gsl_rng_get(rng)%4;
 			int slot;
 			
 			if (slide==0)                     // Up
@@ -174,7 +179,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double Trial_E=H_local(slot);
 			
 			double delE = Trial_E - E;
-			double alpha = ((double) rand()/(double)RAND_MAX);
+			//double alpha = ((double) rand()/(double)RAND_MAX);
+			double alpha=gsl_rng_uniform(rng);
 
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
@@ -204,7 +210,7 @@ void lattice::check()
 }
 
 
-void lattice::init(int lattice_size, int Number)
+void lattice::init(int lattice_size, int Number, gsl_rng * rng)
 {
 
 	L=lattice_size;
@@ -223,11 +229,11 @@ void lattice::init(int lattice_size, int Number)
 	int count=0;
 	while(count!=N)
 	{
-		int n=rand()%V;
+		int n=gsl_rng_get(rng)%V;
 		if (n<0){n=n+V;}
 		if (lattice[n].occ==1) {continue;}
 
-		double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+		double theta = gsl_rng_uniform(rng)*6.283185307179586;
 
 		lattice[n].occ=1;
 		lattice[n].angle=theta;
@@ -357,8 +363,8 @@ void lattice::print_gnu(std::string file_name)
 	out<<"set terminal png"<<std::endl;
 	out<<"set output '"<<png.str()<<"'"<<std::endl;
 	out<<"set key off"<<std::endl;
-	out<<"set xrange [0:253]"<<std::endl;
-	out<<"set yrange [0:253]"<<std::endl;
+	out<<"set xrange [0:53]"<<std::endl;
+	out<<"set yrange [0:53]"<<std::endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<std::endl;
 
 	double d=2.5;

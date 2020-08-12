@@ -2,6 +2,7 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
+#include "../include/gsl_rng.h"
 
 class lattice
 {
@@ -18,14 +19,14 @@ class lattice
 
 public:
 
-	void init(int Lattice_size, int Number);
+	void init(int Lattice_size, int Number, gsl_rng * rng);
 	void set_const(double j, double sig, double frustration);
 	void restart(int Length, int Number, std::string infile);
 
 	void print_data(std::string file_name);
 	void print_gnu(std::string file_name);
 
-	void Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted);
+	void Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng);
 	void check();
 
 	void rotate(int i, double theta);

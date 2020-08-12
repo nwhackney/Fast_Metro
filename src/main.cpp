@@ -6,7 +6,7 @@
 #include <time.h>
 #include <limits>
 
-//#include "../include/gsl_rng.h"
+#include "../include/gsl_rng.h"
 #include "../include/lattice.hpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 
@@ -40,6 +40,7 @@ void run_config()
 	const toml::Value* rst = v.find("Restart_Time");
 	const toml::Value* im = v.find("Restart");
 	const toml::Value* i = v.find("In_File");
+	const toml::Value* s=v.find("Seed");
 	
 	
 	int L= Np->as<int>();
@@ -47,6 +48,7 @@ void run_config()
 	int Time=Tp->as<int>();
 	int end_time=ET->as<int>();
 	int restart_t=rst->as<int>();
+	int seed=s->as<int>();
 	
 	double slp=Sl->as<double>();
 	double w=W->as<double>();
@@ -57,7 +59,14 @@ void run_config()
 	string out_file=outp->as<string>();
 	string in_file=i->as<string>();
 
-	//gsl_rng * r = gsl_rng_alloc (gsl_rng_taus);
+	//initializing gsl random number generator
+	gsl_rng * r;
+	const gsl_rng_type *T;
+	gsl_rng_env_setup();
+	T=gsl_rng_default; // Currently this is the default Tausworthe engine, Chris suggested the Mersenee Twister. Should maybe look into switching/why
+	r=gsl_rng_alloc(T);
+
+	gsl_rng_set(r,seed);
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
@@ -69,7 +78,7 @@ void run_config()
 	}
 	else
 	{
-		crystal.init(L,N);
+		crystal.init(L,N,r);
 		crystal.print_data("init_data.dat");	
 	}
 
@@ -106,7 +115,7 @@ void run_config()
 		slope=10.0/(slp);
 		Temp=1.0/cosh(w*slope*((double) t));
 		
-		crystal.Metropolis(Temp,Edat,accepted);
+		crystal.Metropolis(Temp,Edat,accepted, r);
 
 		// if (t%100000==0)
 		// {
@@ -133,8 +142,10 @@ void run_config()
 
 	for (int t=0; t<=end_time; t++)
 	{
-		crystal.Metropolis(0.0,Edat,accepted);
+		crystal.Metropolis(0.0,Edat,accepted, r);
 	}
+
+	gsl_rng_free(r); //Freeing the rng
 
 	rot_acc.close(); tran_acc.close(); glide_acc.close(); loc_acc.close();
 
