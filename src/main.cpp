@@ -6,7 +6,7 @@
 #include <time.h>
 #include <limits>
 
-#include "../include/gsl_rng.h"
+#include "../include/gsl/gsl_rng.h"
 #include "../include/lattice.hpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 
