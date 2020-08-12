@@ -2,7 +2,7 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
-#include "../include/gsl_rng.h"
+#include "gsl/gsl_rng.h"
 
 class lattice
 {
@@ -19,7 +19,7 @@ class lattice
 
 public:
 
-	void init(int Lattice_size, int Number, gsl_rng * rng);
+	void init(int Lattice_size, int Number, gsl_rng * rngr);
 	void set_const(double j, double sig, double frustration);
 	void restart(int Length, int Number, std::string infile);
 
