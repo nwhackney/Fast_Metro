@@ -50,7 +50,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		if (flag==0) // Rotation
 		{
 			accepted[0]+=1.0;
-			double width = 1.57; //exp(T);
+			double width = 0.2*exp(1.5*T);
 			double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
 			rotate(n,theta);
 			double Trial_E=H_local(n);
@@ -363,8 +363,8 @@ void lattice::print_gnu(std::string file_name)
 	out<<"set terminal png"<<std::endl;
 	out<<"set output '"<<png.str()<<"'"<<std::endl;
 	out<<"set key off"<<std::endl;
-	out<<"set xrange [0:355]"<<std::endl;
-	out<<"set yrange [0:355]"<<std::endl;
+	out<<"set xrange [0:253]"<<std::endl;
+	out<<"set yrange [0:253]"<<std::endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<std::endl;
 
 	double d=2.5;
