@@ -46,16 +46,22 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 		//int flag=rand()%4;
 		int flag=gsl_rng_get(rng)%4;
+		//int flag=0;
 
 		if (flag==0) // Rotation
 		{
 			accepted[0]+=1.0;
-			double width = 0.2*exp(1.5*T);
+			
+			//double width = 3.1415962;
+			//double delta=2.0*(gsl_rng_uniform(rng)-0.5);
+			//double theta=lattice[n].angle+delta*width;
+
+			double width = 0.1*exp(1.5*T);
 			double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
 			rotate(n,theta);
 			double Trial_E=H_local(n);
 			double delE = Trial_E - E;
-			//double alpha = ((double) rand()/(double)RAND_MAX);
+			
 			double alpha = gsl_rng_uniform(rng);
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
@@ -102,23 +108,23 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		else if (flag==2) // Translation + Rotation
 		{
 			accepted[4]+=1.0;
-
+			
 			int unocc= gsl_rng_get(rng)%(V-N);
 			int m=vac[unocc];
-
+			
 			double theta = gsl_rng_uniform(rng)*6.283185307179586;
-
+			
 			site Null; Null.occ=0; Null.angle=0.0;
 			site Spin; Spin.occ=1; Spin.angle=theta;
 
 			lattice.at(n)=Null;
 			lattice.at(m)=Spin;
-
+			
 			double Trial_E=H_local(m);
-
+			
 			double delE = Trial_E - E;
 			double alpha = gsl_rng_uniform(rng);
-
+			
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
@@ -225,6 +231,14 @@ void lattice::init(int lattice_size, int Number, gsl_rng * rng)
 	lattice.resize(V,Null);
 	occ.resize(N);
 	vac.resize(V-N);
+
+	// for (int i=0; i<V; i++)
+	// {
+	// 	double theta = gsl_rng_uniform(rng)*6.283185307179586;
+
+	// 	lattice[n].occ=1;
+	// 	lattice[n].angle=theta;
+	// }
 
 	int count=0;
 	while(count!=N)
@@ -363,8 +377,8 @@ void lattice::print_gnu(std::string file_name)
 	out<<"set terminal png"<<std::endl;
 	out<<"set output '"<<png.str()<<"'"<<std::endl;
 	out<<"set key off"<<std::endl;
-	out<<"set xrange [0:253]"<<std::endl;
-	out<<"set yrange [0:253]"<<std::endl;
+	out<<"set xrange [0:53]"<<std::endl;
+	out<<"set yrange [0:53]"<<std::endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<std::endl;
 
 	double d=2.5;
