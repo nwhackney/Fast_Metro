@@ -118,7 +118,7 @@ void simulation::simulated_annealing()
 	for (int t=restart_t; t<Time; t++)
 	{
 		slope=10.0/(slp);
-		Temp=1.0+(652.0/cosh(w*slope*((double) t)));
+		Temp=1.0/cosh(w*slope*((double) t));
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
@@ -270,7 +270,7 @@ void simulation::parallel_tempering()
 		
 			if (n==Num_Rep-1) {continue;} //Skips trying to swap highest temperature replica, as there is nothing to swap with...
 			double flag=gsl_rng_uniform(r); //Now the replica swaps happens randomly (after lattice sweeps) instead of on a schedule. Suggested by Falcioni & Deem
-			if (flag <= 0.25)
+			if (flag <= 0.05)
 			{
 				swap_tried+=1.0;
 				double E_i, E_j, b_i, b_j, expo, alpha, U;
