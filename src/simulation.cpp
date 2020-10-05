@@ -117,7 +117,7 @@ void simulation::simulated_annealing()
 	for (int t=restart_t; t<Time; t++)
 	{
 		slope=10.0/(slp);
-		Temp=1.0+(1300.0/cosh(w*slope*((double) t)));
+		Temp=1.0+(652.0/cosh(w*slope*((double) t)));
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
