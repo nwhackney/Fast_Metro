@@ -24,7 +24,7 @@ void simulation::read_config()
 	const toml::Value* Np = v.find("L");
 	const toml::Value* Occp = v.find("N");
 	const toml::Value* Jp = v.find("J");
-	const toml::Value* Kp = v.find("K");
+	const toml::Value* Sp = v.find("Sigma");
 	const toml::Value* fp = v.find("f");
 	const toml::Value* Tp = v.find("Time");
 	const toml::Value* Sl = v.find("Slope");
@@ -53,7 +53,8 @@ void simulation::read_config()
 	slp=Sl->as<double>();
 	w=W->as<double>();
 	J=Jp->as<double>();
-	K=Kp->as<double>();
+	double Sigma=Sp->as<double>();
+	K=Sigma-J;
 	f=fp->as<double>();
 
 	restart=im->as<string>();
@@ -170,7 +171,7 @@ void simulation::simulated_annealing()
 	inf<<N<<" spin sites"<<endl;
 	inf<<Time<<" sweeps"<<endl;
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
-	inf<<"Gamma= "<<(abs(J)-K)/abs(J)<<endl;
+	inf<<"Gamma= "<<(J+K)/abs(J)<<endl;
 	inf<<"Final Energy: "<<crystal.H()<<endl;
 	inf<<"Time: "<<duration<<endl;
 
@@ -330,7 +331,7 @@ void simulation::parallel_tempering()
 	inf<<N<<" spin sites"<<endl;
 	inf<<Time<<" sweeps"<<endl;
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
-	inf<<"Gamma= "<<(abs(J)-K)/abs(J)<<endl;
+	inf<<"Gamma= "<<(J+K)/abs(J)<<endl;
 	inf<<"Final Energy: "<<ensemble[0].H()<<endl;
 	inf<<"Time: "<<duration<<endl;
 

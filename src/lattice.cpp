@@ -456,16 +456,16 @@ double lattice::H_local(int i)
     double y = (double) (i/L);
 
     double weight_up=((double) lattice[i].occ)*((double) lattice[up].occ);
-    double H1 = (J*cos(lattice[i].angle-lattice[up].angle+f*x)+K)*weight_up;                    			    // Up Bond
+    double H1 = (-1.0*J*cos(lattice[i].angle-lattice[up].angle+f*x)-K)*weight_up;                    			    // Up Bond
 
     double weight_down=((double) lattice[i].occ)*((double) lattice[down].occ);
-    double H2 = (J*cos(lattice[i].angle-lattice[down].angle-f*x)+K)*weight_down; 		                        // Down Bond
+    double H2 = (-1.0*J*cos(lattice[i].angle-lattice[down].angle-f*x)-K)*weight_down; 		                        // Down Bond
 
     double weight_left=((double) lattice[i].occ)*((double) lattice[left].occ);
-    double H3 =(J*cos(lattice[i].angle-lattice[left].angle-f*y)+K)*weight_left;	                                  // Left Bond
+    double H3 =(-1.0*J*cos(lattice[i].angle-lattice[left].angle-f*y)-K)*weight_left;	                                  // Left Bond
 
     double weight_right=((double) lattice[i].occ)*((double) lattice[right].occ);
-    double H4 =(J*cos(lattice[i].angle-lattice[right].angle+f*y)+K)*weight_right;                    	         // Right Bond
+    double H4 =(-1.0*J*cos(lattice[i].angle-lattice[right].angle+f*y)-K)*weight_right;                    	         // Right Bond
 
 	double H = H1 + H2 + H3 + H4;
 
@@ -481,8 +481,8 @@ double lattice::H()
 		int right=(i+1)%V,
 		    down=(i+L)%V;
 
-		    H+=(J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))+K)*lattice[i].occ*lattice[right].occ;
-		    H+=(J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))+K)*lattice[i].occ*lattice[down].occ;
+		    H+=(-1.0*J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))-K)*lattice[i].occ*lattice[right].occ;
+		    H+=(-1.0*J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))-K)*lattice[i].occ*lattice[down].occ;
 	}
 
 	return H;
@@ -500,10 +500,10 @@ double lattice::strain(int i)
     if (up<0){up=up+V;}
     if (left<0){left=left+V;}
 
-    H+=J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))*lattice[i].occ*lattice[up].occ; 			    // Up Bond
-    H+=J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))*lattice[i].occ*lattice[down].occ; 		    // Down Bond
-    H+=J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))*lattice[i].occ*lattice[left].occ;		    // Left Bond
-    H+=J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))*lattice[i].occ*lattice[right].occ; 	    // Right Bond
+    H+=1.0*J*cos(lattice[i].angle-lattice[up].angle+f*(i%L))*lattice[i].occ*lattice[up].occ; 			    // Up Bond
+    H+=-1.0*J*cos(lattice[i].angle-lattice[down].angle-f*(i%L))*lattice[i].occ*lattice[down].occ; 		    // Down Bond
+    H+=-1.0*J*cos(lattice[i].angle-lattice[left].angle-f*(i/L))*lattice[i].occ*lattice[left].occ;		    // Left Bond
+    H+=-1.0*J*cos(lattice[i].angle-lattice[right].angle+f*(i/L))*lattice[i].occ*lattice[right].occ; 	    // Right Bond
 
     int neighbor=lattice[up].occ+lattice[down].occ+lattice[left].occ+lattice[right].occ;
     double num= (double) neighbor;
