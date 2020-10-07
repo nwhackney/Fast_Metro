@@ -29,6 +29,7 @@ void simulation::read_config()
 	const toml::Value* Tp = v.find("Time");
 	const toml::Value* Sl = v.find("Slope");
 	const toml::Value* ET = v.find("End_Time");
+	const toml::Value* Etemp = v.find("End_Temp");
 	
 	const toml::Value* outp = v.find("output");
 	
@@ -56,6 +57,7 @@ void simulation::read_config()
 	double Sigma=Sp->as<double>();
 	K=Sigma-J;
 	f=fp->as<double>();
+	Tf=Etemp->as<double>();
 
 	restart=im->as<string>();
 	out_file=outp->as<string>();
@@ -118,7 +120,7 @@ void simulation::simulated_annealing()
 	for (int t=restart_t; t<Time; t++)
 	{
 		slope=10.0/(slp);
-		Temp=1.0/cosh(w*slope*((double) t));
+		Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
