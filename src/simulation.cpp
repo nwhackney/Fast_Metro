@@ -40,6 +40,7 @@ void simulation::read_config()
 	const toml::Value* i = v.find("In_File");
 	const toml::Value* s=v.find("Seed");
 	const toml::Value* nr=v.find("Number_of_Replicas");
+	const toml::Value* sp=v.find("Swap_Probability");
 	const toml::Value* rt=v.find("Run_Type");
 	
 	
@@ -58,6 +59,7 @@ void simulation::read_config()
 	K=Sigma-J;
 	f=fp->as<double>();
 	Tf=Etemp->as<double>();
+	SP=sp->as<double>();
 
 	restart=im->as<string>();
 	out_file=outp->as<string>();
@@ -272,7 +274,7 @@ void simulation::parallel_tempering()
 		
 			if (n==Num_Rep-1) {continue;} //Skips trying to swap highest temperature replica, as there is nothing to swap with...
 			double flag=gsl_rng_uniform(r); //Now the replica swaps happens randomly (after lattice sweeps) instead of on a schedule. Suggested by Falcioni & Deem
-			if (flag <= 0.05)
+			if (flag <= SP)
 			{
 				swap_tried+=1.0;
 				double E_i, E_j, b_i, b_j, expo, alpha, U;

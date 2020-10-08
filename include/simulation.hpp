@@ -18,7 +18,8 @@ class simulation
 		  J,
 		  K,
 		  f,
-		  Tf;
+		  Tf,
+		  SP;
 	
 	std::string restart,
 		       out_file,
