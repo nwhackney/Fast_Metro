@@ -334,7 +334,7 @@ void simulation::parallel_tempering()
 	inf<<L<<"x"<<L<<" lattice"<<endl;
 	inf<<N<<" spin sites"<<endl;
 	inf<<Time<<" sweeps"<<endl;
-	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
+	inf<<"J="<<J<<" Sigma="<<Sigma<<" K="<<K<<" f="<<f<<endl;
 	inf<<"Gamma= "<<(J+K)/abs(J)<<endl;
 	inf<<"Final Energy: "<<ensemble[0].H()<<endl;
 	inf<<"Time: "<<duration<<endl;

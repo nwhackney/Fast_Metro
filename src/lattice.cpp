@@ -377,8 +377,8 @@ void lattice::print_gnu(std::string file_name)
 	out<<"set terminal png"<<std::endl;
 	out<<"set output '"<<png.str()<<"'"<<std::endl;
 	out<<"set key off"<<std::endl;
-	out<<"set xrange [0:53]"<<std::endl;
-	out<<"set yrange [0:53]"<<std::endl;
+	out<<"set xrange [0:200]"<<std::endl;
+	out<<"set yrange [0:200]"<<std::endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<std::endl;
 
 	double d=2.5;
