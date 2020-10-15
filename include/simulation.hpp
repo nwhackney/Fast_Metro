@@ -19,6 +19,7 @@ class simulation
 		  K,
 		  f,
 		  Tf,
+		  Sigma,
 		  SP;
 	
 	std::string restart,

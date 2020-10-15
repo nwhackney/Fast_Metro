@@ -55,7 +55,7 @@ void simulation::read_config()
 	slp=Sl->as<double>();
 	w=W->as<double>();
 	J=Jp->as<double>();
-	double Sigma=Sp->as<double>();
+	Sigma=Sp->as<double>();
 	K=Sigma-J;
 	f=fp->as<double>();
 	Tf=Etemp->as<double>();
