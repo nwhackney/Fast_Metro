@@ -19,7 +19,8 @@ class lattice
 
 public:
 
-	void init(int Lattice_size, int Number, gsl_rng * rngr);
+	void init(int Lattice_size, int Number, gsl_rng * rng);
+	void rect_init(int Lx, int Ly, gsl_rng * rng);
 	void set_const(double j, double sig, double frustration);
 	void restart(int Length, int Number, std::string infile);
 
@@ -27,6 +28,7 @@ public:
 	void print_gnu(std::string file_name);
 
 	void Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng);
+	void Spin_Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng);
 	void check();
 
 	void rotate(int i, double theta);

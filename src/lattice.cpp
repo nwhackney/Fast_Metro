@@ -200,6 +200,43 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 	}
 }
 
+
+void lattice::Spin_Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng) // Accepted: (move 0 tried, move 0 accepted, move 1 tried, move 1 accepted ...)
+{
+	double Total_Energy=H();
+	Efile<<Total_Energy<<std::endl;
+	for (int i=0; i<N; i++)
+	{
+		int n=occ[i];
+		double E=H_local(n);
+
+		std::vector<site> saved = lattice;
+
+		//int flag=rand()%4;
+		
+		accepted[0]+=1.0;
+		
+		//double width = 3.1415962;
+		//double delta=2.0*(gsl_rng_uniform(rng)-0.5);
+		//double theta=lattice[n].angle+delta*width;
+
+		double width = 0.1*exp(1.5*T);
+		double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
+		rotate(n,theta);
+		double Trial_E=H_local(n);
+		double delE = Trial_E - E;
+		
+		double alpha = gsl_rng_uniform(rng);
+		double U= exp(-1*delE/T);
+		if (alpha > fmin(1.0,U))
+		{
+			lattice=saved;
+		}
+		else {accepted[1]+=1.0;}
+		
+	}
+}
+
 void lattice::check()
 {
 	//std::cout<<"Volume: "<<V<<" Array Size: "<<lattice.size()<<std::endl;
@@ -266,6 +303,57 @@ void lattice::init(int lattice_size, int Number, gsl_rng * rng)
 		}
 	}
 	//std::cout<<occ.size()<<" "<<vac.size()<<" "<<occ.size()+vac.size()<<std::endl;
+}
+
+void lattice::rect_init(int Lx, int Ly, gsl_rng * rng)
+{
+	
+	if (Lx>=Ly)
+	{
+		V=(Lx+2)*(Lx+2);
+		L=Lx+2;
+	}
+	else if (Ly>Lx)
+	{
+		V=(Ly+2)*(Ly*2);
+		L=Ly+2;
+	}
+
+	N=Lx*Ly;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	lattice.resize(V,Null);
+	occ.resize(N);
+	vac.resize(V-N);
+
+	int count=0;
+	for (int i=0; i<Lx; i++)
+	{
+		for (int j=0; j<Ly; j++)
+		{
+			int n = (i+1)*L+(j+1);
+			double theta = gsl_rng_uniform(rng)*6.283185307179586;
+
+			lattice[n].occ=1;
+			lattice[n].angle=theta;
+
+			occ[count]=n;
+			count++;
+		}
+	}
+
+	int m=0;
+	for (int i=0; i<V; i++)
+	{
+		if (lattice[i].occ==0)
+		{
+			vac[m]=i;
+			m++;
+		}
+	}
 }
 
 void lattice::restart(int Length, int Number, std::string infile)
@@ -377,8 +465,8 @@ void lattice::print_gnu(std::string file_name)
 	out<<"set terminal png"<<std::endl;
 	out<<"set output '"<<png.str()<<"'"<<std::endl;
 	out<<"set key off"<<std::endl;
-	out<<"set xrange [0:200]"<<std::endl;
-	out<<"set yrange [0:200]"<<std::endl;
+	out<<"set xrange [0:75]"<<std::endl;
+	out<<"set yrange [0:75]"<<std::endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<std::endl;
 
 	double d=2.5;
@@ -413,7 +501,8 @@ void lattice::set_const(double j, double sig, double frustration)
 {
 	J=j;
 	K=sig;
-	f=frustration*3.1415962; //Why is this multiplied by Pi? Need to make sure that is correct...
+	//f=frustration*3.1415962; //Why is this multiplied by Pi? Need to make sure that is correct...
+	f=0.5*frustration; // Factor of 1/2 to match continuum calculation, where I dropped the 2pi factor
 }
 
 void lattice::rotate(int i, double theta)
