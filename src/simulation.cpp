@@ -125,7 +125,7 @@ void simulation::simulated_annealing()
 		slope=10.0/(slp);
 		Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		
-		crystal.Spin_Metropolis(Temp,Edat,accepted, r);
+		crystal.Metropolis(Temp,Edat,accepted, r);
 
 		// if (t%100000==0)
 		// {
