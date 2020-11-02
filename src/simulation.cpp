@@ -87,8 +87,8 @@ void simulation::simulated_annealing()
 	}
 	else
 	{
-		//crystal.init(L,N,r);
-		crystal.rect_init(Num_Rep,Num_Rep,r);
+		crystal.init(L,N,r);
+		//crystal.rect_init(Num_Rep,Num_Rep,r);
 		crystal.print_data("init_data.dat");	
 	}
 
