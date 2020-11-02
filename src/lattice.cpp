@@ -501,8 +501,8 @@ void lattice::set_const(double j, double sig, double frustration)
 {
 	J=j;
 	K=sig;
-	//f=frustration*3.1415962; //Why is this multiplied by Pi? Need to make sure that is correct...
-	f=0.5*frustration; // Factor of 1/2 to match continuum calculation, where I dropped the 2pi factor
+	f=frustration*3.1415962; //Why is this multiplied by Pi? Need to make sure that is correct...
+	//f=0.5*frustration; // Factor of 1/2 to match continuum calculation, where I dropped the 2pi factor
 }
 
 void lattice::rotate(int i, double theta)
