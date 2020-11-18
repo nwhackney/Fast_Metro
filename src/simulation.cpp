@@ -152,7 +152,7 @@ void simulation::simulated_annealing()
 
 	for (int t=0; t<=end_time; t++)
 	{
-		crystal.Spin_Metropolis(0.0,Edat,accepted, r);
+		crystal.Metropolis(0.0,Edat,accepted, r);
 	}
 
 	gsl_rng_free(r); //Freeing the rng
