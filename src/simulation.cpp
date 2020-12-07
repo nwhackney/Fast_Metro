@@ -67,6 +67,53 @@ void simulation::read_config()
 	run_type=rt->as<string>();
 }
 
+float clamp(float x, float lowerlimit, float upperlimit)
+{
+  if (x < lowerlimit)
+    x = lowerlimit;
+  if (x > upperlimit)
+    x = upperlimit;
+  return x;
+}
+
+double Step_Temp(double t)
+{
+	double T=0.0;
+	if (0.0<=t and t<150000.0){T=1.0;}
+	else if (200000.0<=t and t<350000.0){T=0.8;}
+	else if (400000.0<=t and t<550000.0){T=0.6;}
+	else if (600000.0<=t and t<750000.0){T=0.4;}
+	else if (800000.0<=t and t<950000.0){T=0.2;}
+	else if (1000000.0<=t and t<=1500000.0){T=0.0;}
+
+	else if (150000.0<=t and t<200000.0)
+	{
+		double x = clamp((t - 150000.0) / (200000.0 - 150000.0), 0.0, 1.0);
+		T=1.0-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (350000.0<=t and t<400000.0)
+	{
+		double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
+		T=0.8-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (550000.0<=t and t<600000.0)
+	{
+		double x = clamp((t - 550000.0) / (600000.0 - 550000.0), 0.0, 1.0);
+		T=0.6-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (750000.0<=t and t<800000.0)
+	{
+		double x = clamp((t - 750000.0) / (800000.0 - 750000.0), 0.0, 1.0);
+		T=0.4-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (950000.0<=t and t<1000000.0)
+	{
+		double x = clamp((t - 950000.0) / (1000000.0 - 950000.0), 0.0, 1.0);
+		T=0.2-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	return T;
+}
+
 void simulation::simulated_annealing()
 {
 	//initializing gsl random number generator
@@ -122,8 +169,9 @@ void simulation::simulated_annealing()
 
 	for (int t=restart_t; t<Time; t++)
 	{
-		slope=10.0/(slp);
-		Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
+		// slope=10.0/(slp);
+		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
+		Temp=Step_Temp(t)+Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
