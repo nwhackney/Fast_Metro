@@ -36,6 +36,7 @@ public:
 
 	int occupied(int i);
 	int how_many();
+	int size();
 
 	double angle(int i);
 	double H_local(int i);

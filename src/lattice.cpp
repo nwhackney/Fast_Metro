@@ -526,6 +526,11 @@ int lattice::how_many()
 	return N;
 }
 
+int lattice::size()
+{
+	return L;
+}
+
 double lattice::angle(int i)
 {
 	return lattice[i].angle;
