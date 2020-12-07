@@ -4,6 +4,7 @@
 
 #include "../include/lattice.hpp"
 #include "../include/simulation.hpp"
+#include "../include/Hoshen_Kopelman.hpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 #include "../include/gsl/gsl_rng.h"
 
@@ -169,9 +170,9 @@ void simulation::simulated_annealing()
 
 	for (int t=restart_t; t<Time; t++)
 	{
-		// slope=10.0/(slp);
-		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
-		Temp=Step_Temp(t)+Tf;
+		slope=10.0/(slp);
+		Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
+		//Temp=Step_Temp(t)+Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
@@ -195,6 +196,23 @@ void simulation::simulated_annealing()
 			stringstream inter;
 			inter<<"Sys";
 			crystal.print_data(inter.str());
+
+			stringstream agg;
+			agg<<"agg_"<<t;
+			ofstream aggfile;
+			aggfile.open(agg.str());
+			HK clump(crystal);
+			clump.Find_Cluster_periodic();
+			in lbl=clump.max_label;
+			for (int i=0; i<=lbl; i++)
+			{
+				int ncl=clump.cluster_size(i);
+				if (ncl>=1)
+				{
+					aggfile<<ncl<<endl;
+				}
+			}
+			aggfile.close();
 		}
 	}
 
@@ -227,6 +245,13 @@ void simulation::simulated_annealing()
 	inf<<"Gamma= "<<(J+K)/abs(J)<<endl;
 	inf<<"Final Energy: "<<crystal.H()<<endl;
 	inf<<"Time: "<<duration<<endl;
+
+	HK Aggregate(crystal);
+	Aggregate.Find_Cluster_periodic();
+	Aggregate.print_cluster();
+	int clusters=Aggregate.cluster_count();
+
+	inf<<"Clusters: "<<clusters<<endl;
 
 	inf.close();
 	Edat.close();
