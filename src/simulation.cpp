@@ -115,6 +115,69 @@ double Step_Temp(double t)
 	return T;
 }
 
+double Step_Temp_Longer(double t)
+{
+	double T=0.0;
+
+	if (0.0<=t and t<150000.0){T=1.0;}
+	else if (200000.0<t and t<=350000.0){T=0.7;}
+	else if (400000.0<t and t<=550000.0){T=0.5;}
+	else if (600000.0<t and t<=750000.0){T=0.3;}
+	else if (800000.0<t and t<=1400000.0){T=0.1;}
+	else if (1500000.0<t and t<=1900000.0){T=0.08;}
+	else if (2000000.0<t and t<=2400000.0){T=0.06;}
+	else if (2500000.0<t and t<=2900000.0){T=0.04;}
+	else if (3500000.0<t and t<=4000000.0){T=0.01;}
+
+	else if (150000.0<=t and t<200000.0)
+	{
+		double x = clamp((t - 150000.0) / (200000.0 - 150000.0), 0.0, 1.0);
+		T=1.0-0.3*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (350000.0<=t and t<400000.0)
+	{
+		double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
+		T=0.7-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (550000.0<=t and t<600000.0)
+	{
+		double x = clamp((t - 550000.0) / (600000.0 - 550000.0), 0.0, 1.0);
+		T=0.5-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (750000.0<=t and t<800000.0)
+	{
+		double x = clamp((t - 750000.0) / (800000.0 - 750000.0), 0.0, 1.0);
+		T=0.3-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1400000.0<=t and t<1500000.0)
+	{
+		double x = clamp((t - 1400000.0) / (1500000.0 - 1400000.0), 0.0, 1.0);
+		T=0.1-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1900000.0<=t and t<2000000.0)
+	{
+		double x = clamp((t - 1900000.0) / (2000000.0 - 1900000.0), 0.0, 1.0);
+		T=0.08-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (2400000.0<=t and t<2500000.0)
+	{
+		double x = clamp((t - 2400000.0) / (2500000.0 - 2400000.0), 0.0, 1.0);
+		T=0.06-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (2900000.0<=t and t<3000000.0)
+	{
+		double x = clamp((t - 2900000.0) / (3000000.0 - 2900000.0), 0.0, 1.0);
+		T=0.04-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (3400000.0<=t and t<3500000.0)
+	{
+		double x = clamp((t - 3400000.0) / (3500000.0 - 3400000.0), 0.0, 1.0);
+		T=0.02-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+
+	return T;
+}
+
 void simulation::simulated_annealing()
 {
 	//initializing gsl random number generator
@@ -172,7 +235,7 @@ void simulation::simulated_annealing()
 	{
 		//slope=10.0/(slp);
 		//Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
-		Temp=Step_Temp(t)+Tf;
+		Temp=Step_Temp_Longer(t);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
@@ -183,6 +246,27 @@ void simulation::simulated_annealing()
 		// 	crystal.print_gnu(look.str());
 		// }
 
+		if (t==1400000)
+		{
+			crystal.print_data("agg1.dat");
+		}
+		else if (t==1900000)
+		{
+			crystal.print_data("agg08.dat");
+		}
+		else if (t==2400000)
+		{
+			crystal.print_data("agg06.dat");	
+		}
+		else if (t==2900000)
+		{
+			crystal.print_data("agg04.dat");	
+		}
+		else if (t==3400000)
+		{
+			crystal.print_data("agg02.dat");
+		}
+
 		if (t%1000==0)
 		{
 			rot_acc<<t<<" "<<accepted[1]/accepted[0]<<endl;
@@ -191,7 +275,30 @@ void simulation::simulated_annealing()
 			loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		}
 
-		if (t%50000==0)
+		if (t%500000==0 and t<=800000)
+		{
+			stringstream inter;
+			inter<<"Sys";
+			crystal.print_data(inter.str());
+
+			stringstream agg;
+			agg<<"agg_qc_"<<t;
+			ofstream aggfile;
+			aggfile.open(agg.str());
+			HK clump(crystal);
+			clump.Find_Cluster_periodic();
+			int lbl=clump.max_label();
+			for (int i=0; i<=lbl; i++)
+			{
+				int ncl=clump.cluster_size(i);
+				if (ncl>=1)
+				{
+					aggfile<<ncl<<endl;
+				}
+			}
+			aggfile.close();
+		}
+		if (t%50000==0 and t>800000)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -203,7 +310,7 @@ void simulation::simulated_annealing()
 			aggfile.open(agg.str());
 			HK clump(crystal);
 			clump.Find_Cluster_periodic();
-			in lbl=clump.max_label;
+			int lbl=clump.max_label();
 			for (int i=0; i<=lbl; i++)
 			{
 				int ncl=clump.cluster_size(i);
