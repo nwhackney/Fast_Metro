@@ -356,6 +356,49 @@ void lattice::rect_init(int Lx, int Ly, gsl_rng * rng)
 	}
 }
 
+void lattice::ribbon_init(int Li, int width, gsl_rng * rng)
+{
+	
+	V=Li*Li;
+	L=Li;
+
+	N=Li*width;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	lattice.resize(V,Null);
+	occ.resize(N);
+	vac.resize(V-N);
+
+	int count=0;
+	for (int i=10; i<10+width; i++)
+	{
+		for (int j=0; j<L; j++)
+		{
+			int n = i*L+j;
+			double theta = gsl_rng_uniform(rng)*6.283185307179586;
+
+			lattice[n].occ=1;
+			lattice[n].angle=theta;
+
+			occ[count]=n;
+			count++;
+		}
+	}
+
+	int m=0;
+	for (int i=0; i<V; i++)
+	{
+		if (lattice[i].occ==0)
+		{
+			vac[m]=i;
+			m++;
+		}
+	}
+}
+
 void lattice::restart(int Length, int Number, std::string infile)
 {
 

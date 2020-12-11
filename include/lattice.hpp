@@ -21,6 +21,7 @@ public:
 
 	void init(int Lattice_size, int Number, gsl_rng * rng);
 	void rect_init(int Lx, int Ly, gsl_rng * rng);
+	void ribbon_init(int L, int width, gsl_rng * rng);
 	void set_const(double j, double sig, double frustration);
 	void restart(int Length, int Number, std::string infile);
 

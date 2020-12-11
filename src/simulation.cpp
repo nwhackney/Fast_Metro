@@ -198,8 +198,9 @@ void simulation::simulated_annealing()
 	}
 	else
 	{
-		crystal.init(L,N,r);
+		//crystal.init(L,N,r);
 		//crystal.rect_init(Num_Rep,Num_Rep,r);
+		crystal.ribbon_init(L,Num_Rep,r);
 		crystal.print_data("init_data.dat");	
 	}
 
@@ -235,9 +236,9 @@ void simulation::simulated_annealing()
 	{
 		//slope=10.0/(slp);
 		//Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
-		Temp=Step_Temp_Longer(t);
+		Temp=Step_Temp(t);
 		
-		crystal.Metropolis(Temp,Edat,accepted, r);
+		crystal.Spin_Metropolis(Temp,Edat,accepted, r);
 
 		// if (t%100000==0)
 		// {
@@ -246,26 +247,26 @@ void simulation::simulated_annealing()
 		// 	crystal.print_gnu(look.str());
 		// }
 
-		if (t==1400000)
-		{
-			crystal.print_data("agg1.dat");
-		}
-		else if (t==1900000)
-		{
-			crystal.print_data("agg08.dat");
-		}
-		else if (t==2400000)
-		{
-			crystal.print_data("agg06.dat");	
-		}
-		else if (t==2900000)
-		{
-			crystal.print_data("agg04.dat");	
-		}
-		else if (t==3400000)
-		{
-			crystal.print_data("agg02.dat");
-		}
+		// if (t==1400000)
+		// {
+		// 	crystal.print_data("agg1.dat");
+		// }
+		// else if (t==1900000)
+		// {
+		// 	crystal.print_data("agg08.dat");
+		// }
+		// else if (t==2400000)
+		// {
+		// 	crystal.print_data("agg06.dat");	
+		// }
+		// else if (t==2900000)
+		// {
+		// 	crystal.print_data("agg04.dat");	
+		// }
+		// else if (t==3400000)
+		// {
+		// 	crystal.print_data("agg02.dat");
+		// }
 
 		if (t%1000==0)
 		{
