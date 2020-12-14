@@ -582,9 +582,16 @@ double lattice::angle(int i)
 double lattice::H_local(int i)
 {
 	int up=(i-L)%V,
-	    down=(i+L)%V,
-	    left=(i-1)%V,
-	    right=(i+1)%V;
+	    down=(i+L)%V;
+
+	int left,
+	    right;
+
+	if ((i+1)%L==0){right=i-L+1;}
+	else {right=i+1;}
+
+	if (i%L==0) {left=i+L-1;}
+	else {left=i-1;}    
 
     if (up<0){up=up+V;}
     if (left<0){left=left+V;}
