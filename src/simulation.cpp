@@ -120,60 +120,73 @@ double Step_Temp_Longer(double t)
 	double T=0.0;
 
 	if (0.0<=t and t<150000.0){T=1.0;}
-	else if (200000.0<t and t<=350000.0){T=0.7;}
-	else if (400000.0<t and t<=550000.0){T=0.5;}
-	else if (600000.0<t and t<=750000.0){T=0.3;}
-	else if (800000.0<t and t<=1400000.0){T=0.1;}
-	else if (1500000.0<t and t<=1900000.0){T=0.08;}
-	else if (2000000.0<t and t<=2400000.0){T=0.06;}
-	else if (2500000.0<t and t<=2900000.0){T=0.04;}
-	else if (3500000.0<t and t<=4000000.0){T=0.01;}
+		else if (200000.0<t and t<=350000.0){T=0.7;}
+		else if (400000.0<t and t<=550000.0){T=0.5;}
+		else if (600000.0<t and t<=1000000.0){T=0.3;}
+		else if (1100000.0<t and t<=1500000.0){T=0.2;}
+		else if (1600000.0<t and t<=2000000.0){T=0.15;}
+		else if (2100000.0<t and t<=2500000.0){T=0.09;}
+		else if (2600000.0<t and t<=3000000.0){T=0.07;}
+		else if (3100000.0<t and t<=3500000.0){T=0.05;}
+		else if (3600000.0<t and t<=4000000.0){T=0.03;}
+		else if (4100000.0<t and t<=4500000.0){T=0.02;}
+		else if (4600000.0<t and t<=5000000.0){T=0.005;}
 
-	else if (150000.0<=t and t<200000.0)
-	{
-		double x = clamp((t - 150000.0) / (200000.0 - 150000.0), 0.0, 1.0);
-		T=1.0-0.3*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (350000.0<=t and t<400000.0)
-	{
-		double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
-		T=0.7-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (550000.0<=t and t<600000.0)
-	{
-		double x = clamp((t - 550000.0) / (600000.0 - 550000.0), 0.0, 1.0);
-		T=0.5-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (750000.0<=t and t<800000.0)
-	{
-		double x = clamp((t - 750000.0) / (800000.0 - 750000.0), 0.0, 1.0);
-		T=0.3-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1400000.0<=t and t<1500000.0)
-	{
-		double x = clamp((t - 1400000.0) / (1500000.0 - 1400000.0), 0.0, 1.0);
-		T=0.1-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1900000.0<=t and t<2000000.0)
-	{
-		double x = clamp((t - 1900000.0) / (2000000.0 - 1900000.0), 0.0, 1.0);
-		T=0.08-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (2400000.0<=t and t<2500000.0)
-	{
-		double x = clamp((t - 2400000.0) / (2500000.0 - 2400000.0), 0.0, 1.0);
-		T=0.06-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (2900000.0<=t and t<3000000.0)
-	{
-		double x = clamp((t - 2900000.0) / (3000000.0 - 2900000.0), 0.0, 1.0);
-		T=0.04-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (3400000.0<=t and t<3500000.0)
-	{
-		double x = clamp((t - 3400000.0) / (3500000.0 - 3400000.0), 0.0, 1.0);
-		T=0.02-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
+		else if (150000.0<=t and t<200000.0)
+		{
+			double x = clamp((t - 150000.0) / (200000.0 - 150000.0), 0.0, 1.0);
+			T=1.0-0.3*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (350000.0<=t and t<400000.0)
+		{
+			double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
+			T=0.7-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (550000.0<=t and t<600000.0)
+		{
+			double x = clamp((t - 550000.0) / (600000.0 - 550000.0), 0.0, 1.0);
+			T=0.5-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (1000000.0<t and t<=1100000.0)
+		{
+			double x = clamp((t - 1000000.0) / (1100000.0 - 1000000.0), 0.0, 1.0);
+			T=0.3-0.1*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (1500000.0<t and t<=1600000.0)
+		{
+			double x = clamp((t - 1500000.0) / (1600000.0 - 1500000.0), 0.0, 1.0);
+			T=0.2-0.05*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (2000000.0<t and t<=2100000.0)
+		{
+			double x = clamp((t - 2000000.0) / (2100000.0 - 2000000.0), 0.0, 1.0);
+			T=0.15-0.06*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (2500000.0<t and t<=2600000.0)
+		{
+			double x = clamp((t - 2500000.0) / (2600000.0 - 2500000.0), 0.0, 1.0);
+			T=0.09-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (3000000.0<t and t<=3100000.0)
+		{
+			double x = clamp((t - 3000000.0) / (3100000.0 - 3000000.0), 0.0, 1.0);
+			T=0.07-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (3500000.0<t and t<=3600000.0)
+		{
+			double x = clamp((t - 3500000.0) / (3600000.0 - 3500000.0), 0.0, 1.0);
+			T=0.05-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (4000000.0<t and t<=4100000.0)
+		{
+			double x = clamp((t - 4000000.0) / (4100000.0 - 4000000.0), 0.0, 1.0);
+			T=0.03-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (4500000.0<t and t<=4600000.0)
+		{
+			double x = clamp((t - 4500000.0) / (4600000.0 - 4500000.0), 0.0, 1.0);
+			T=0.02-0.015*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
 
 	return T;
 }
@@ -198,9 +211,9 @@ void simulation::simulated_annealing()
 	}
 	else
 	{
-		//crystal.init(L,N,r);
+		crystal.init(L,N,r);
 		//crystal.rect_init(Num_Rep,Num_Rep,r);
-		crystal.ribbon_init(L,Num_Rep,r);
+		//crystal.ribbon_init(L,Num_Rep,r);
 		crystal.print_data("init_data.dat");	
 	}
 
@@ -236,37 +249,35 @@ void simulation::simulated_annealing()
 	{
 		//slope=10.0/(slp);
 		//Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
-		Temp=Step_Temp(t);
+		Temp=Step_Temp_Longer(t);
 		
-		crystal.Spin_Metropolis(Temp,Edat,accepted, r);
+		crystal.Metropolis(Temp,Edat,accepted, r);
 
-		// if (t%100000==0)
-		// {
-		// 	stringstream look;
-		// 	look<<"snap_"<<t;
-		// 	crystal.print_gnu(look.str());
-		// }
+		if (t==2000000)
+		{
+			crystal.print_data("agg15.dat");
+		}
 
-		// if (t==1400000)
-		// {
-		// 	crystal.print_data("agg1.dat");
-		// }
-		// else if (t==1900000)
-		// {
-		// 	crystal.print_data("agg08.dat");
-		// }
-		// else if (t==2400000)
-		// {
-		// 	crystal.print_data("agg06.dat");	
-		// }
-		// else if (t==2900000)
-		// {
-		// 	crystal.print_data("agg04.dat");	
-		// }
-		// else if (t==3400000)
-		// {
-		// 	crystal.print_data("agg02.dat");
-		// }
+		if (t==2500000)
+		{
+			crystal.print_data("agg09.dat");
+		}
+		else if (t==3000000)
+		{
+			crystal.print_data("agg07.dat");
+		}
+		else if (t==3500000)
+		{
+			crystal.print_data("agg05.dat");	
+		}
+		else if (t==4000000)
+		{
+			crystal.print_data("agg03.dat");	
+		}
+		else if (t==4500000)
+		{
+			crystal.print_data("agg02.dat");
+		}
 
 		if (t%1000==0)
 		{
@@ -276,7 +287,7 @@ void simulation::simulated_annealing()
 			loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		}
 
-		if (t%500000==0 and t<=800000)
+		if (t%500000==0 and t<=1100000)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -299,7 +310,7 @@ void simulation::simulated_annealing()
 			}
 			aggfile.close();
 		}
-		if (t%50000==0 and t>800000)
+		if (t%50000==0 and t>1100000)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -324,10 +335,10 @@ void simulation::simulated_annealing()
 		}
 	}
 
-	for (int t=0; t<=end_time; t++)
-	{
-		crystal.Metropolis(0.0,Edat,accepted, r);
-	}
+	// for (int t=0; t<=end_time; t++)
+	// {
+	// 	crystal.Metropolis(0.0,Edat,accepted, r);
+	// }
 
 	gsl_rng_free(r); //Freeing the rng
 
