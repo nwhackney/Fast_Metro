@@ -24,8 +24,10 @@ public:
 	double cluster_energy_periodic(int label);
 	double surface_members(int label);
 	double circularity(int label);
+	double distance_to_surface_periodic(int label);
 
 	std::vector<double> principle_moments(int label);
 	std::vector<double> mean_distance_to_surface(int label);
 	std::vector<double> mean_distance_to_surface_periodic(int label);
+
 };

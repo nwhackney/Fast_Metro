@@ -348,6 +348,78 @@ std::vector<double> HK::mean_distance_to_surface(int label)
 	return distr;
 }
 
+double HK::distance_to_surface_periodic(int label)
+{
+	std::vector<int> distance;
+	std::vector<xy> coord;
+	std::vector<double> distr(2,0.0);
+
+	for (int i=0; i<L; i++)
+	{
+		for (int j=0; j<L; j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				xy temp;
+				temp.x=(double) i; temp.y=(double) j;
+				coord.push_back(temp);
+			}
+		}
+	}
+
+	for (int n=0; n<coord.size(); n++)
+	{
+		int i=coord[n].x; int j = coord[n].y;
+		int nc=0.0;
+
+		if (i==0.0) {nc += system.occupied((i+1)*L+j)+system.occupied((L-1)*L+j);}
+		else if (i==L-1.0) {nc += system.occupied(j)+system.occupied((i-1)*L+j);}
+		else {nc += system.occupied((i+1)*L+j)+system.occupied((i-1)*L+j);}
+
+		if (j==0.0) {nc += system.occupied(L*i+j+1)+system.occupied(i*L+L-1);}
+		else if (j==L-1.0) {nc += system.occupied(i*L)+system.occupied(L*i+j-1);}
+		else {nc += system.occupied(i*L+j+1)+system.occupied(L*i+j-1);}
+
+		if (nc != 4) {distance.push_back(0); continue;}
+
+		int D=2*L;
+		for (int m=0; m<coord.size(); m++)
+		{
+
+			int s=coord[m].x; int t=coord[m].y;
+
+			int nc2=0.0;
+
+			if (s==0) {nc2 += system.occupied(L*(s+1)+t)+system.occupied(L*(L-1)+t);}
+			else if (s==L-1) {nc2 += system.occupied(t)+system.occupied(L*(s-1)+t);}
+			else {nc2 += system.occupied(L*(s+1)+t)+system.occupied(L*(s-1)+t);}
+
+			if (t==0) {nc2 += system.occupied(L*s+t+1)+system.occupied(L*s+L-1);}
+			else if (t==L-1) {nc2 += system.occupied(L*s)+system.occupied(L*s+t-1);}
+			else {nc2 += system.occupied(L*s+t+1)+system.occupied(L*s+t-1);}
+
+			int temp=abs(i-s)+abs(j-t);
+			if (temp<D and nc2!=4)
+			{
+				D=temp;
+			}
+
+		}
+		
+		distance.push_back(D);
+	}
+
+	int sum=0;
+	for (int u=0; u<distance.size(); u++)
+	{
+		sum+=distance[u];
+	}
+	
+	double num = (double) sum;
+
+	return num;
+}
+
 std::vector<double> HK::mean_distance_to_surface_periodic(int label)
 {
 	std::vector<int> distance;

@@ -119,74 +119,32 @@ double Step_Temp_Longer(double t)
 {
 	double T=0.0;
 
-	if (0.0<=t and t<150000.0){T=1.0;}
-		else if (200000.0<t and t<=350000.0){T=0.7;}
-		else if (400000.0<t and t<=550000.0){T=0.5;}
-		else if (600000.0<t and t<=1000000.0){T=0.3;}
-		else if (1100000.0<t and t<=1500000.0){T=0.2;}
-		else if (1600000.0<t and t<=2000000.0){T=0.15;}
-		else if (2100000.0<t and t<=2500000.0){T=0.09;}
-		else if (2600000.0<t and t<=3000000.0){T=0.07;}
-		else if (3100000.0<t and t<=3500000.0){T=0.05;}
-		else if (3600000.0<t and t<=4000000.0){T=0.03;}
-		else if (4100000.0<t and t<=4500000.0){T=0.02;}
-		else if (4600000.0<t and t<=5000000.0){T=0.005;}
+	if (0.0<=t and t<=1000000.0)
+	{
+		double x = clamp((t) / (1000000.0), 0.0, 1.0);
+		T=1.0-0.8*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1000000.0<t and t<=2000000.0){T=0.2;}
+	else if (2500000.0<t and t<=3500000.0){T=0.04;}
+	else if (4000000.0<t and t<=5000000.0){T=0.03;}
+	else if (5500000.0<t and t<=6500000.0){T=0.02;}
+	
 
-		else if (150000.0<=t and t<200000.0)
-		{
-			double x = clamp((t - 150000.0) / (200000.0 - 150000.0), 0.0, 1.0);
-			T=1.0-0.3*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (350000.0<=t and t<400000.0)
-		{
-			double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
-			T=0.7-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (550000.0<=t and t<600000.0)
-		{
-			double x = clamp((t - 550000.0) / (600000.0 - 550000.0), 0.0, 1.0);
-			T=0.5-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (1000000.0<t and t<=1100000.0)
-		{
-			double x = clamp((t - 1000000.0) / (1100000.0 - 1000000.0), 0.0, 1.0);
-			T=0.3-0.1*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (1500000.0<t and t<=1600000.0)
-		{
-			double x = clamp((t - 1500000.0) / (1600000.0 - 1500000.0), 0.0, 1.0);
-			T=0.2-0.05*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (2000000.0<t and t<=2100000.0)
-		{
-			double x = clamp((t - 2000000.0) / (2100000.0 - 2000000.0), 0.0, 1.0);
-			T=0.15-0.06*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (2500000.0<t and t<=2600000.0)
-		{
-			double x = clamp((t - 2500000.0) / (2600000.0 - 2500000.0), 0.0, 1.0);
-			T=0.09-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (3000000.0<t and t<=3100000.0)
-		{
-			double x = clamp((t - 3000000.0) / (3100000.0 - 3000000.0), 0.0, 1.0);
-			T=0.07-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (3500000.0<t and t<=3600000.0)
-		{
-			double x = clamp((t - 3500000.0) / (3600000.0 - 3500000.0), 0.0, 1.0);
-			T=0.05-0.02*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (4000000.0<t and t<=4100000.0)
-		{
-			double x = clamp((t - 4000000.0) / (4100000.0 - 4000000.0), 0.0, 1.0);
-			T=0.03-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
-		else if (4500000.0<t and t<=4600000.0)
-		{
-			double x = clamp((t - 4500000.0) / (4600000.0 - 4500000.0), 0.0, 1.0);
-			T=0.02-0.015*x*x*x*(x*(x*6.0-15.0)+10.0);
-		}
+	else if (2000000.0<=t and t<2500000.0)
+	{
+		double x = clamp((t - 2000000.0) / (2500000.0 - 2000000.0), 0.0, 1.0);
+		T=0.2-0.16*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (350000.0<=t and t<400000.0)
+	{
+		double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
+		T=0.04-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (500000.0<=t and t<550000.0)
+	{
+		double x = clamp((t - 500000.0) / (550000.0 - 500000.0), 0.0, 1.0);
+		T=0.03-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
 
 	return T;
 }
@@ -245,38 +203,33 @@ void simulation::simulated_annealing()
 	glide_acc.open("Glide_Acceptance.dat");
 	loc_acc.open("Local_Acceptance.dat");
 
+	ofstream MDVT;
+	MDVT.open("mdvt.dat");
+
 	for (int t=restart_t; t<Time; t++)
 	{
-		//slope=10.0/(slp);
-		//Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
+		// slope=10.0/(slp);
+		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		Temp=Step_Temp_Longer(t);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
 		if (t==2000000)
 		{
-			crystal.print_data("agg15.dat");
+			crystal.print_data("agg2.dat");
 		}
 
-		if (t==2500000)
+		if (t==3500000)
 		{
-			crystal.print_data("agg09.dat");
+			crystal.print_data("agg04.dat");
 		}
-		else if (t==3000000)
+		else if (t==5000000)
 		{
-			crystal.print_data("agg07.dat");
+			crystal.print_data("agg03.dat");
 		}
-		else if (t==3500000)
+		else if (t==6500000)
 		{
-			crystal.print_data("agg05.dat");	
-		}
-		else if (t==4000000)
-		{
-			crystal.print_data("agg03.dat");	
-		}
-		else if (t==4500000)
-		{
-			crystal.print_data("agg02.dat");
+			crystal.print_data("agg02.dat");	
 		}
 
 		if (t%1000==0)
@@ -287,30 +240,7 @@ void simulation::simulated_annealing()
 			loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		}
 
-		if (t%500000==0 and t<=1100000)
-		{
-			stringstream inter;
-			inter<<"Sys";
-			crystal.print_data(inter.str());
-
-			stringstream agg;
-			agg<<"agg_qc_"<<t;
-			ofstream aggfile;
-			aggfile.open(agg.str());
-			HK clump(crystal);
-			clump.Find_Cluster_periodic();
-			int lbl=clump.max_label();
-			for (int i=0; i<=lbl; i++)
-			{
-				int ncl=clump.cluster_size(i);
-				if (ncl>=1)
-				{
-					aggfile<<ncl<<endl;
-				}
-			}
-			aggfile.close();
-		}
-		if (t%50000==0 and t>1100000)
+		if (t%50000==0 and t>=1000000)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -322,18 +252,25 @@ void simulation::simulated_annealing()
 			aggfile.open(agg.str());
 			HK clump(crystal);
 			clump.Find_Cluster_periodic();
+
+			double meanD=0.0;
 			int lbl=clump.max_label();
-			for (int i=0; i<=lbl; i++)
+			for (int i=1; i<=lbl; i++)
 			{
 				int ncl=clump.cluster_size(i);
+				meanD += clump.distance_to_surface_periodic(i);
 				if (ncl>=1)
 				{
 					aggfile<<ncl<<endl;
 				}
 			}
 			aggfile.close();
+
+			MDVT<<t<<" "<<meanD/N<<endl;
 		}
 	}
+
+	MDVT.close();
 
 	// for (int t=0; t<=end_time; t++)
 	// {
@@ -369,6 +306,14 @@ void simulation::simulated_annealing()
 	Aggregate.Find_Cluster_periodic();
 	Aggregate.print_cluster();
 	int clusters=Aggregate.cluster_count();
+
+	for (int n=1; n<=Aggregate.max_label();n++)
+	{
+		int size = Aggregate.cluster_size(n);
+		if (size == 0) {continue;}
+		vector<double> md = Aggregate.mean_distance_to_surface_periodic(n);
+		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
+	}
 
 	inf<<"Clusters: "<<clusters<<endl;
 
