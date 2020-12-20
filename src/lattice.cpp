@@ -540,6 +540,32 @@ void lattice::print_gnu(std::string file_name)
 	out<<"plot NaN"<<std::endl;
 }
 
+void lattice::spin_correlation(std::ofstream &scfile)
+{
+	for (int r=0; r<L; r++)
+	{
+		double g=0.0;
+		for (int i=0; i<V; i++)
+		{
+			double s0=2*lattice[i].occ-1;
+
+			int right_neighbor=(i+r)%V,
+			    down_neighbor=(i+r*L)%V,
+			    left_neighbor=(i-r)%V,
+			    up_neighbor=(i-r*L)%V; 
+
+			double s_right=2*lattice[right_neighbor].occ-1;
+			       // s_left=2*lattice[left_neighbor].occ-1,
+			       // s_down=2*lattice[down_neighbor].occ-1,
+			       // s_up=2*lattice[up_neighbor].occ-1;
+
+			g+=s0*s_right;
+
+		}
+		scfile<<r<<" "<<g/V<<std::endl;
+	}
+}
+
 void lattice::set_const(double j, double sig, double frustration)
 {
 	J=j;
@@ -584,14 +610,19 @@ double lattice::H_local(int i)
 	int up=(i-L)%V,
 	    down=(i+L)%V;
 
-	int left,
-	    right;
+	// Helical
+	int left=(i-1)%V,
+	    right=(i+1)%V;
 
-	if ((i+1)%L==0){right=i-L+1;}
-	else {right=i+1;}
+	// Periodic
+	// int left,
+	//     right;
 
-	if (i%L==0) {left=i+L-1;}
-	else {left=i-1;}    
+	// if ((i+1)%L==0){right=i-L+1;}
+	// else {right=i+1;}
+
+	// if (i%L==0) {left=i+L-1;}
+	// else {left=i-1;}    
 
     if (up<0){up=up+V;}
     if (left<0){left=left+V;}

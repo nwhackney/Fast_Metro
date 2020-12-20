@@ -28,6 +28,8 @@ public:
 	void print_data(std::string file_name);
 	void print_gnu(std::string file_name);
 
+	void spin_correlation(std::ofstream &scfile);
+
 	void Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng);
 	void Spin_Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng);
 	void check();

@@ -149,6 +149,30 @@ double Step_Temp_Longer(double t)
 	return T;
 }
 
+double Single_Step(double t, double beta)
+{
+	double T=0.0,
+	       Temp=1.0/beta;
+
+	double interval=0.1-Temp;
+
+	if (0.0<=t and t<=1000000.0)
+	{
+		double x = clamp((t) / (1000000.0), 0.0, 1.0);
+		T=1.0-0.9*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1000000.0<t and t<=1500000.0){T=0.1;}
+	else if (1500000<t and t<=2000000.0)
+	{
+		double x = clamp((t - 1500000.0) / (2000000.0 - 1500000.0), 0.0, 1.0);
+		T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (t<2000000.0 and t<=4000000.0)
+	{
+		T=Temp;
+	}
+}
+
 void simulation::simulated_annealing()
 {
 	//initializing gsl random number generator
@@ -210,27 +234,28 @@ void simulation::simulated_annealing()
 	{
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
-		Temp=Step_Temp_Longer(t);
+		//Temp=Step_Temp_Longer(t);
+		Temp=Single_Step(t,Tf);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
-		if (t==2000000)
-		{
-			crystal.print_data("agg2.dat");
-		}
+		// if (t==2000000)
+		// {
+		// 	crystal.print_data("agg2.dat");
+		// }
 
-		if (t==3500000)
-		{
-			crystal.print_data("agg04.dat");
-		}
-		else if (t==5000000)
-		{
-			crystal.print_data("agg03.dat");
-		}
-		else if (t==6500000)
-		{
-			crystal.print_data("agg02.dat");	
-		}
+		// if (t==3500000)
+		// {
+		// 	crystal.print_data("agg04.dat");
+		// }
+		// else if (t==5000000)
+		// {
+		// 	crystal.print_data("agg03.dat");
+		// }
+		// else if (t==6500000)
+		// {
+		// 	crystal.print_data("agg02.dat");	
+		// }
 
 		if (t%1000==0)
 		{
@@ -268,9 +293,26 @@ void simulation::simulated_annealing()
 
 			MDVT<<t<<" "<<meanD/N<<endl;
 		}
+		if (t%50000==0 and t>=2000000)
+		{
+			stringstream sc_file;
+			sc_file<<"sc_"<<t<<".dat";
+
+			ofstream SC;
+			SC.open(sc_file.str());
+			crystal.spin_correlation(SC);
+			SC.close();
+		}
 	}
 
 	MDVT.close();
+
+	ofstream SC;
+	SC.open("sc_final.dat");
+
+	crystal.spin_correlation(SC);
+	
+	SC.close();
 
 	// for (int t=0; t<=end_time; t++)
 	// {
