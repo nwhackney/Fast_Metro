@@ -171,6 +171,24 @@ double Single_Step(double t, double beta)
 	{
 		T=Temp;
 	}
+	return T;
+}
+
+double Single_Step_Short(double t, double beta)
+{
+	double T=0.0,
+	       Temp=1.0/beta;
+
+	double interval=0.1-Temp;
+
+	if (0.0<=t and t<=1000000.0)
+	{
+		double x = clamp((t) / (1000000.0), 0.0, 1.0);
+		T=1.0-0.98*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1000000.0<t){T=0.02;}
+
+	return T;
 }
 
 void simulation::simulated_annealing()
@@ -230,6 +248,9 @@ void simulation::simulated_annealing()
 	ofstream MDVT;
 	MDVT.open("mdvt.dat");
 
+	// ofstream AC;
+	// AC.open("AC.dat");
+
 	for (int t=restart_t; t<Time; t++)
 	{
 		// slope=10.0/(slp);
@@ -264,6 +285,18 @@ void simulation::simulated_annealing()
 			glide_acc<<t<<" "<<accepted[5]/accepted[4]<<endl;
 			loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		}
+
+		//if (t==1000000) {lattice init = crystal;}
+
+		// if (t%10000==0 and t>=100000)
+		// {
+		// 	double autoC=0.0;
+		// 	for (int m=0; m<L*L; m++)
+		// 	{
+		// 		autoC+=((2*crystal.occupied(m)-1)*(2*init.occupied(m)-1));
+		// 	}
+		// 	AC<<t<<" "<<autoC<<endl;
+		// }
 
 		if (t%50000==0 and t>=1000000)
 		{
@@ -306,6 +339,7 @@ void simulation::simulated_annealing()
 	}
 
 	MDVT.close();
+	//AC.close();
 
 	ofstream SC;
 	SC.open("sc_final.dat");
