@@ -154,7 +154,7 @@ double Single_Step(double t, double beta)
 	double T=0.0,
 	       Temp=1.0/beta;
 
-	double interval=0.1-Temp;
+	double interval=1.0-Temp;
 
 	if (0.0<=t and t<=1000000.0)
 	{
@@ -179,15 +179,15 @@ double Single_Step_Short(double t, double beta)
 	double T=0.0,
 	       Temp=1.0/beta;
 
-	double interval=0.1-Temp;
+	double interval=1.0-Temp;
 
 	if (0.0<=t and t<=1000000.0)
 	{
 		double x = clamp((t) / (1000000.0), 0.0, 1.0);
-		T=1.0-0.98*x*x*x*(x*(x*6.0-15.0)+10.0);
+		T=1.0-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (1000000.0<t){T=0.02;}
-
+	else if (1000000.0<t and t<=2000000.0){T=Temp;}
+	
 	return T;
 }
 
@@ -248,15 +248,18 @@ void simulation::simulated_annealing()
 	ofstream MDVT;
 	MDVT.open("mdvt.dat");
 
-	// ofstream AC;
-	// AC.open("AC.dat");
+	ofstream AC;
+	AC.open("AC.dat");
+
+	lattice init;
+	init = crystal;
 
 	for (int t=restart_t; t<Time; t++)
 	{
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Single_Step(t,Tf);
+		Temp=Single_Step_Short(t,Tf);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
@@ -280,15 +283,17 @@ void simulation::simulated_annealing()
 
 		if (t%1000==0)
 		{
-			rot_acc<<t<<" "<<accepted[1]/accepted[0]<<endl;
-			tran_acc<<t<<" "<<accepted[3]/accepted[2]<<endl;
-			glide_acc<<t<<" "<<accepted[5]/accepted[4]<<endl;
-			loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
+			stringstream mov;
+			mov<<"mov_"<<t<<".dat";
+
+			crystal.print_data(mov.str());
+			// rot_acc<<t<<" "<<accepted[1]/accepted[0]<<endl;
+			// tran_acc<<t<<" "<<accepted[3]/accepted[2]<<endl;
+			// glide_acc<<t<<" "<<accepted[5]/accepted[4]<<endl;
+			// loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		}
 
-		//if (t==1000000) {lattice init = crystal;}
-
-		// if (t%10000==0 and t>=100000)
+		// if (t%1000==0)
 		// {
 		// 	double autoC=0.0;
 		// 	for (int m=0; m<L*L; m++)
@@ -298,48 +303,50 @@ void simulation::simulated_annealing()
 		// 	AC<<t<<" "<<autoC<<endl;
 		// }
 
-		if (t%50000==0 and t>=1000000)
-		{
-			stringstream inter;
-			inter<<"Sys";
-			crystal.print_data(inter.str());
+		//if (t%50000==0 and t>=1000000)
+		// if (t%1000==0)
+		// {
+		// 	stringstream inter;
+		// 	inter<<"Sys";
+		// 	crystal.print_data(inter.str());
 
-			stringstream agg;
-			agg<<"agg_"<<t;
-			ofstream aggfile;
-			aggfile.open(agg.str());
-			HK clump(crystal);
-			clump.Find_Cluster_periodic();
+		// 	stringstream agg;
+		// 	agg<<"agg_"<<t;
+		// 	ofstream aggfile;
+		// 	aggfile.open(agg.str());
+		// 	HK clump(crystal);
+		// 	clump.Find_Cluster_periodic();
 
-			double meanD=0.0;
-			int lbl=clump.max_label();
-			for (int i=1; i<=lbl; i++)
-			{
-				int ncl=clump.cluster_size(i);
-				meanD += clump.distance_to_surface_periodic(i);
-				if (ncl>=1)
-				{
-					aggfile<<ncl<<endl;
-				}
-			}
-			aggfile.close();
+		// 	double meanD=0.0;
+		// 	int lbl=clump.max_label();
+		// 	for (int i=1; i<=lbl; i++)
+		// 	{
+		// 		int ncl=clump.cluster_size(i);
+		// 		meanD += clump.distance_to_surface_periodic(i);
+		// 		if (ncl>=1)
+		// 		{
+		// 			aggfile<<ncl<<endl;
+		// 		}
+		// 	}
+		// 	aggfile.close();
 
-			MDVT<<t<<" "<<meanD/N<<endl;
-		}
-		if (t%50000==0 and t>=2000000)
-		{
-			stringstream sc_file;
-			sc_file<<"sc_"<<t<<".dat";
+		// 	MDVT<<t<<" "<<meanD/N<<endl;
+		// }
 
-			ofstream SC;
-			SC.open(sc_file.str());
-			crystal.spin_correlation(SC);
-			SC.close();
-		}
+		// if (t%50000==0 and t>=2000000)
+		// {
+		// 	stringstream sc_file;
+		// 	sc_file<<"sc_"<<t<<".dat";
+
+		// 	ofstream SC;
+		// 	SC.open(sc_file.str());
+		// 	crystal.spin_correlation(SC);
+		// 	SC.close();
+		// }
 	}
 
 	MDVT.close();
-	//AC.close();
+	AC.close();
 
 	ofstream SC;
 	SC.open("sc_final.dat");
