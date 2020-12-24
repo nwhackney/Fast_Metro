@@ -188,6 +188,23 @@ double Critical_Temps(double t, double beta)
 	return T;
 }
 
+double No_Step(double t, double beta)
+{
+	double T=0.0,
+	       Temp=1.0/beta;
+
+	double interval=1.0-Temp;
+
+	if (0.0<=t and t<=4000000.0)
+	{
+		double x = clamp((t) / (4000000.0), 0.0, 1.0);
+		T=1.0-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (4000000.0<t and t<=5000000) {T=Temp;}
+	
+	return T;
+}
+
 void simulation::simulated_annealing()
 {
 	//initializing gsl random number generator
@@ -256,59 +273,14 @@ void simulation::simulated_annealing()
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Stepped(t,Tf);
+		Temp=No_Step(t,Tf);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
-		if (t==500000.0)
+		if (t==400000.0)
 		{
-			crystal.print_data("agg1.dat");
+			crystal.print_data("agg_ea.dat");
 
-			stringstream sc_file;
-			sc_file<<"sc_"<<t<<".dat";
-
-			ofstream SC;
-			SC.open(sc_file.str());
-			crystal.spin_correlation(SC);
-			SC.close();
-		}
-
-		if (t==1100000.0)
-		{
-			crystal.print_data("agg075.dat");
-			stringstream sc_file;
-			sc_file<<"sc_"<<t<<".dat";
-
-			ofstream SC;
-			SC.open(sc_file.str());
-			crystal.spin_correlation(SC);
-			SC.close();
-		}
-		if (t==1700000.0)
-		{
-			crystal.print_data("agg05.dat");
-			stringstream sc_file;
-			sc_file<<"sc_"<<t<<".dat";
-
-			ofstream SC;
-			SC.open(sc_file.str());
-			crystal.spin_correlation(SC);
-			SC.close();
-		}
-		if (t==2300000.0)
-		{
-			crystal.print_data("agg025.dat");
-			stringstream sc_file;
-			sc_file<<"sc_"<<t<<".dat";
-
-			ofstream SC;
-			SC.open(sc_file.str());
-			crystal.spin_correlation(SC);
-			SC.close();
-		}
-		if (t==3000000.0)
-		{
-			crystal.print_data("agg01.dat");
 			stringstream sc_file;
 			sc_file<<"sc_"<<t<<".dat";
 
