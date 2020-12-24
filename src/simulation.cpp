@@ -115,64 +115,49 @@ double Step_Temp(double t)
 	return T;
 }
 
-double Step_Temp_Longer(double t)
+double Stepped(double t, double beta)
 {
 	double T=0.0;
 
-	if (0.0<=t and t<=1000000.0)
-	{
-		double x = clamp((t) / (1000000.0), 0.0, 1.0);
-		T=1.0-0.8*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1000000.0<t and t<=2000000.0){T=0.2;}
-	else if (2500000.0<t and t<=3500000.0){T=0.04;}
-	else if (4000000.0<t and t<=5000000.0){T=0.03;}
-	else if (5500000.0<t and t<=6500000.0){T=0.02;}
-	
-
-	else if (2000000.0<=t and t<2500000.0)
-	{
-		double x = clamp((t - 2000000.0) / (2500000.0 - 2000000.0), 0.0, 1.0);
-		T=0.2-0.16*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (350000.0<=t and t<400000.0)
-	{
-		double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
-		T=0.04-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (500000.0<=t and t<550000.0)
-	{
-		double x = clamp((t - 500000.0) / (550000.0 - 500000.0), 0.0, 1.0);
-		T=0.03-0.01*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-
-	return T;
-}
-
-double Single_Step(double t, double beta)
-{
-	double T=0.0,
-	       Temp=1.0/beta;
+	double Temp=1.0/beta;
 
 	double interval=0.1-Temp;
 
-	if (0.0<=t and t<=1000000.0)
+	if (0.0<=t and t<=500000.0) {T=1.0;}
+	else if (500000.0<t and t<=600000.0)
 	{
-		double x = clamp((t) / (1000000.0), 0.0, 1.0);
-		T=1.0-0.9*x*x*x*(x*(x*6.0-15.0)+10.0);
+		double x = clamp((t-500000.0) / (100000.0), 0.0, 1.0);
+		T=1.0-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (1000000.0<t and t<=1500000.0){T=0.1;}
-	else if (1500000<t and t<=2000000.0)
+	else if (600000.0<t and t<=1100000.0) {T=0.75;}
+	else if (1100000.0<t and t<=1200000.0)
 	{
-		double x = clamp((t - 1500000.0) / (2000000.0 - 1500000.0), 0.0, 1.0);
+		double x = clamp((t-1100000.0) / (100000.0), 0.0, 1.0);
+		T=0.75-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1200000.0<t and t<=1700000.0) {T=0.5;}
+	else if (1700000.0<t and t<=1800000.0)
+	{
+		double x = clamp((t-1700000.0) / (100000.0), 0.0, 1.0);
+		T=0.5-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1800000.0<t and t<=2300000.0) {T=0.25;}
+	else if (2300000.0<t and t<=2400000.0)
+	{
+		double x = clamp((t-2300000.0) / (100000.0), 0.0, 1.0);
+		T=0.25-0.15*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (2400000.0<t and t<=3000000.0) {T=0.1;}
+	else if (3000000.0<t and t<=4000000.0)
+	{
+		double x = clamp((t-3000000.0) / (1000000.0), 0.0, 1.0);
 		T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (t<2000000.0 and t<=4000000.0)
-	{
-		T=Temp;
-	}
+	else if (4000000.0<t and t<=5000000.0) {T=Temp;}
+	
 	return T;
 }
+
 
 double Critical_Temps(double t, double beta)
 {
@@ -271,13 +256,13 @@ void simulation::simulated_annealing()
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Critical_Temps(t,Tf);
+		Temp=Stepped(t,Tf);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
-		if (t==1666667.0)
+		if (t==500000.0)
 		{
-			crystal.print_data("aggKT.dat");
+			crystal.print_data("agg1.dat");
 
 			stringstream sc_file;
 			sc_file<<"sc_"<<t<<".dat";
@@ -288,9 +273,9 @@ void simulation::simulated_annealing()
 			SC.close();
 		}
 
-		if (t==3333334.0)
+		if (t==1100000.0)
 		{
-			crystal.print_data("agg0TC.dat");
+			crystal.print_data("agg075.dat");
 			stringstream sc_file;
 			sc_file<<"sc_"<<t<<".dat";
 
@@ -299,10 +284,39 @@ void simulation::simulated_annealing()
 			crystal.spin_correlation(SC);
 			SC.close();
 		}
-		// else if (t==6500000)
-		// {
-		// 	crystal.print_data("agg02.dat");	
-		// }
+		if (t==1700000.0)
+		{
+			crystal.print_data("agg05.dat");
+			stringstream sc_file;
+			sc_file<<"sc_"<<t<<".dat";
+
+			ofstream SC;
+			SC.open(sc_file.str());
+			crystal.spin_correlation(SC);
+			SC.close();
+		}
+		if (t==2300000.0)
+		{
+			crystal.print_data("agg025.dat");
+			stringstream sc_file;
+			sc_file<<"sc_"<<t<<".dat";
+
+			ofstream SC;
+			SC.open(sc_file.str());
+			crystal.spin_correlation(SC);
+			SC.close();
+		}
+		if (t==3000000.0)
+		{
+			crystal.print_data("agg01.dat");
+			stringstream sc_file;
+			sc_file<<"sc_"<<t<<".dat";
+
+			ofstream SC;
+			SC.open(sc_file.str());
+			crystal.spin_correlation(SC);
+			SC.close();
+		}
 
 		// if (t%1000==0)
 		// {
