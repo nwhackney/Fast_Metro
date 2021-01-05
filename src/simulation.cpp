@@ -158,6 +158,56 @@ double Stepped(double t, double beta)
 	return T;
 }
 
+double Stepped_Longer(double t, double beta)
+{
+	double T=0.0;
+
+	double Temp=1.0/beta;
+
+	double interval=0.1-Temp;
+
+	if (0.0<=t and t<=500000.0) {T=1.0;}
+	else if (500000.0<t and t<=600000.0)
+	{
+		double x = clamp((t-500000.0) / (100000.0), 0.0, 1.0);
+		T=1.0-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (600000.0<t and t<=1100000.0) {T=0.8;}
+	else if (1100000.0<t and t<=1200000.0)
+	{
+		double x = clamp((t-1100000.0) / (100000.0), 0.0, 1.0);
+		T=0.8-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1200000.0<t and t<=1700000.0) {T=0.6;}
+	else if (1700000.0<t and t<=1800000.0)
+	{
+		double x = clamp((t-1700000.0) / (100000.0), 0.0, 1.0);
+		T=0.6-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1800000.0<t and t<=2300000.0) {T=0.4;}
+	else if (2300000.0<t and t<=2400000.0)
+	{
+		double x = clamp((t-2300000.0) / (100000.0), 0.0, 1.0);
+		T=0.4-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (2400000.0<t and t<=3000000.0) {T=0.2;}
+	else if (3000000.0<t and t<=3100000.0)
+	{
+		double x = clamp((t-3000000.0) / (100000.0), 0.0, 1.0);
+		T=0.2-0.1*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (3100000.0<t and t<=4000000.0) {T=0.1;}
+
+	else if (4000000.0<t and t<=6000000.0)
+	{
+		double x = clamp((t-4000000.0) / (2000000.0), 0.0, 1.0);
+		T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (6000000.0<t and t<=8000000.0) {T=Temp;}
+	
+	return T;
+}
+
 
 double Critical_Temps(double t, double beta)
 {
@@ -228,7 +278,7 @@ void simulation::simulated_annealing()
 		crystal.init(L,N,r);
 		//crystal.rect_init(Num_Rep,Num_Rep,r);
 		//crystal.ribbon_init(L,Num_Rep,r);
-		crystal.print_data("init_data.dat");	
+		crystal.print_data("init");	
 	}
 
 	crystal.print_gnu("init");
@@ -268,27 +318,35 @@ void simulation::simulated_annealing()
 	lattice init;
 	init = crystal;
 
+	// Temp Looking at Agg of initialization
+	ofstream Taggfile;
+	Taggfile.open("agg_init.dat");
+	HK clump(crystal);
+	clump.Find_Cluster_periodic();
+
+	double MDD=0.0;
+	int lab=clump.max_label();
+	for (int i=1; i<=lab; i++)
+	{
+		int numc=clump.cluster_size(i);
+		MDD += clump.distance_to_surface_periodic(i);
+		if (numc>=1)
+		{
+			Taggfile<<numc<<endl;
+		}
+	}
+	Taggfile.close();
+	// End Temp
+
+
 	for (int t=restart_t; t<Time; t++)
 	{
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=No_Step(t,Tf);
+		Temp=Stepped_Longer(t,Tf);
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
-
-		if (t==400000.0)
-		{
-			crystal.print_data("agg_ea.dat");
-
-			stringstream sc_file;
-			sc_file<<"sc_"<<t<<".dat";
-
-			ofstream SC;
-			SC.open(sc_file.str());
-			crystal.spin_correlation(SC);
-			SC.close();
-		}
 
 		// if (t%1000==0)
 		// {
