@@ -25,7 +25,8 @@ class simulation
 	std::string restart,
 		       out_file,
 		       in_file,
-	            run_type;
+	            run_type,
+	            acf;
 
 	gsl_rng * r;
 

@@ -31,6 +31,7 @@ void simulation::read_config()
 	const toml::Value* Sl = v.find("Slope");
 	const toml::Value* ET = v.find("End_Time");
 	const toml::Value* Etemp = v.find("End_Temp");
+	const toml::Value* ACF = v.find("AutoCorrelation");
 	
 	const toml::Value* outp = v.find("output");
 	
@@ -66,6 +67,7 @@ void simulation::read_config()
 	out_file=outp->as<string>();
 	in_file=i->as<string>();
 	run_type=rt->as<string>();
+	acf=ACF->as<string>();
 }
 
 float clamp(float x, float lowerlimit, float upperlimit)
@@ -75,44 +77,6 @@ float clamp(float x, float lowerlimit, float upperlimit)
   if (x > upperlimit)
     x = upperlimit;
   return x;
-}
-
-double Step_Temp(double t)
-{
-	double T=0.0;
-	if (0.0<=t and t<150000.0){T=1.0;}
-	else if (200000.0<=t and t<350000.0){T=0.8;}
-	else if (400000.0<=t and t<550000.0){T=0.6;}
-	else if (600000.0<=t and t<750000.0){T=0.4;}
-	else if (800000.0<=t and t<950000.0){T=0.2;}
-	else if (1000000.0<=t and t<=1500000.0){T=0.0;}
-
-	else if (150000.0<=t and t<200000.0)
-	{
-		double x = clamp((t - 150000.0) / (200000.0 - 150000.0), 0.0, 1.0);
-		T=1.0-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (350000.0<=t and t<400000.0)
-	{
-		double x = clamp((t - 350000.0) / (400000.0 - 350000.0), 0.0, 1.0);
-		T=0.8-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (550000.0<=t and t<600000.0)
-	{
-		double x = clamp((t - 550000.0) / (600000.0 - 550000.0), 0.0, 1.0);
-		T=0.6-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (750000.0<=t and t<800000.0)
-	{
-		double x = clamp((t - 750000.0) / (800000.0 - 750000.0), 0.0, 1.0);
-		T=0.4-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (950000.0<=t and t<1000000.0)
-	{
-		double x = clamp((t - 950000.0) / (1000000.0 - 950000.0), 0.0, 1.0);
-		T=0.2-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	return T;
 }
 
 double Stepped(double t, double beta)
@@ -158,86 +122,6 @@ double Stepped(double t, double beta)
 	return T;
 }
 
-double Stepped_Longer(double t, double beta)
-{
-	double T=0.0;
-
-	double Temp=1.0/beta;
-
-	double interval=0.1-Temp;
-
-	if (0.0<=t and t<=500000.0) {T=1.0;}
-	else if (500000.0<t and t<=600000.0)
-	{
-		double x = clamp((t-500000.0) / (100000.0), 0.0, 1.0);
-		T=1.0-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (600000.0<t and t<=1100000.0) {T=0.8;}
-	else if (1100000.0<t and t<=1200000.0)
-	{
-		double x = clamp((t-1100000.0) / (100000.0), 0.0, 1.0);
-		T=0.8-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1200000.0<t and t<=1700000.0) {T=0.6;}
-	else if (1700000.0<t and t<=1800000.0)
-	{
-		double x = clamp((t-1700000.0) / (100000.0), 0.0, 1.0);
-		T=0.6-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1800000.0<t and t<=2300000.0) {T=0.4;}
-	else if (2300000.0<t and t<=2400000.0)
-	{
-		double x = clamp((t-2300000.0) / (100000.0), 0.0, 1.0);
-		T=0.4-0.2*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (2400000.0<t and t<=3000000.0) {T=0.2;}
-	else if (3000000.0<t and t<=3100000.0)
-	{
-		double x = clamp((t-3000000.0) / (100000.0), 0.0, 1.0);
-		T=0.2-0.1*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (3100000.0<t and t<=4000000.0) {T=0.1;}
-
-	else if (4000000.0<t and t<=6000000.0)
-	{
-		double x = clamp((t-4000000.0) / (2000000.0), 0.0, 1.0);
-		T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (6000000.0<t and t<=8000000.0) {T=Temp;}
-	
-	return T;
-}
-
-
-double Critical_Temps(double t, double beta)
-{
-	double T=0.0,
-	       Temp=1.0/beta;
-
-	double interval=0.136-Temp;
-
-	if (0.0<=t and t<=666667.0)
-	{
-		double x = clamp((t) / (666667.0), 0.0, 1.0);
-		T=1.0-0.215*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (666667.0<t and t<=1666667.0) {T=0.785;}
-	else if (1666667.0<=t and t<=2333334.0)
-	{
-		double x = clamp((t-1666667.0) / (2333334.0-1666667.0), 0.0, 1.0);
-		T=0.785-0.649*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (2333334.0<t and t<=3333334.0) {T=0.136;}
-	else if (3333334.0<=t and t<=4000000.0)
-	{
-		double x = clamp((t-3333334.0) / (4000000.0-3333334.0), 0.0, 1.0);
-		T=0.136-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (4000000.0<t and t<=5000000.0) {T=Temp;}
-	
-	return T;
-}
-
 double No_Step(double t, double beta)
 {
 	double T=0.0,
@@ -245,14 +129,33 @@ double No_Step(double t, double beta)
 
 	double interval=1.0-Temp;
 
-	if (0.0<=t and t<=4000000.0)
+	if (0.0<=t and t<=1000000.0)
 	{
-		double x = clamp((t) / (4000000.0), 0.0, 1.0);
+		double x = clamp((t) / (1000000.0), 0.0, 1.0);
 		T=1.0-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (4000000.0<t and t<=5000000) {T=Temp;}
+	else if (1000000.0<t and t<=2000000) {T=Temp;}
 	
 	return T;
+}
+
+void Cluster_AC(lattice &tc, int t, vector<double> &time, vector<double> &avg)
+{
+	HK current(tc);
+	current.Find_Cluster_periodic();
+
+	double current_avg=0.0;
+	int current_label=current.max_label();
+	double current_num=(double) current.cluster_count();
+
+	for (int i=1; i<=current_label;i++)
+	{
+		int cnc=current.cluster_size(i);
+		current_avg+=(double) cnc;
+	}
+	current_avg=current_avg/current_num;
+
+	time.push_back(t); avg.push_back(current_avg);	
 }
 
 void simulation::simulated_annealing()
@@ -312,8 +215,8 @@ void simulation::simulated_annealing()
 	ofstream MDVT;
 	MDVT.open("mdvt.dat");
 
-	ofstream AC;
-	AC.open("AC.dat");
+	ofstream Navg;
+	Navg.open("Navg.dat");
 
 	lattice init;
 	init = crystal;
@@ -338,13 +241,17 @@ void simulation::simulated_annealing()
 	Taggfile.close();
 	// End Temp
 
+	vector<double> slice;
+	vector<double> agav;
 
 	for (int t=restart_t; t<Time; t++)
 	{
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Stepped_Longer(t,Tf);
+		Temp=Stepped(t,Tf);
+		//Temp=No_Step(t,Tf);
+		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
@@ -360,17 +267,26 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		if (t%50000==0)
-		{
-			double autoC=0.0;
-			for (int m=0; m<L*L; m++)
-			{
-				autoC+=((2*crystal.occupied(m)-1)*(2*init.occupied(m)-1));
-			}
-			AC<<t<<" "<<autoC<<endl;
-		}
-
 		//if (t%50000==0 and t>=1000000)
+		if (t%10000==0)
+		{
+			HK tavg(crystal);
+			tavg.Find_Cluster_periodic();
+
+			double avg_size=0.0;
+			int labl=tavg.max_label();
+			for (int i=1; i<=labl; i++)
+			{
+				int nc=tavg.cluster_size(i);
+				avg_size+=(double) nc;
+			}
+			Navg<<t<<" "<<avg_size/((double) tavg.cluster_count())<<endl;
+		}
+		// if (acf=="yes")
+		// {
+		// 	Cluster_AC(crystal, t, slice, agav);
+		// }
+
 		if (t%50000==0)
 		{
 			stringstream inter;
@@ -412,8 +328,31 @@ void simulation::simulated_annealing()
 		// }
 	}
 
+	// ofstream AutoC;
+	// AutoC.open("Auto.dat");
+	// double chi_zero;
+	// for (int i=0; i<=Time; i++)
+	// {
+	// 	int diff=Time-slice[i];
+	// 	int max_bin=Time-i;
+	// 	double coeff=1.0/((double) diff);
+
+	// 	double chi=0.0;
+	// 	for (int j=0; j<=max_bin; j++)
+	// 	{
+	// 		chi+=coeff*agav[j]*agav[j+i];
+	// 		for (int k=0; k<=max_bin; k++)
+	// 		{
+	// 			chi-=coeff*coeff*agav[j]*agav[k+i];
+	// 		}
+	// 	}
+	// 	if (i==0){chi_zero=chi;}
+	// 	AutoC<<slice[i]<<" "<<chi/chi_zero<<endl;
+	// }
+	// AutoC.close();
+
 	MDVT.close();
-	AC.close();
+	Navg.close();
 
 	ofstream SC;
 	SC.open("sc_final.dat");
