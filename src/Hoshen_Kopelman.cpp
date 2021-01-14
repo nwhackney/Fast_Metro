@@ -131,7 +131,7 @@ void HK::Find_Cluster_periodic()
 				{
 		  			case 0:
 		  				labels[0]++;
-						assert(labels[0] < N_Spins);
+						assert(labels[0] < N_Spins+1);
 						labels[labels[0]] = labels[0];
 		  				matrix[i][j] = labels[0];      // a new cluster
 		  				break;
