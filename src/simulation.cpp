@@ -158,6 +158,23 @@ void Cluster_AC(lattice &tc, int t, vector<double> &time, vector<double> &avg)
 	time.push_back(t); avg.push_back(current_avg);	
 }
 
+void Uni_AC(lattice &tc, vector< vector<double> > &avg)
+{
+	HK current(tc);
+	current.Find_Cluster_periodic();
+
+	for(int n=0; n<tc.how_many(); n++)
+	{
+		int index=tc.occ_to_index(n);
+		int label=current.index_to_label(index);
+
+		int size=current.cluster_size(label);
+		//cout<<index<<" "<<tc.occupied(index)<<" "<<label<<" "<<size<<endl;
+
+		avg[n].push_back(size);	
+	}
+}
+
 void simulation::simulated_annealing()
 {
 	//initializing gsl random number generator
@@ -242,17 +259,19 @@ void simulation::simulated_annealing()
 	// End Temp
 
 	vector<double> slice;
-	vector<double> agav;
+	vector< vector<double> > agav;
+	agav.resize(N);
 
 	for (int t=restart_t; t<Time; t++)
 	{
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Stepped(t,Tf);
+		//Temp=Stepped(t,Tf);
 		//Temp=No_Step(t,Tf);
-		//Temp=1.0/Tf;
+		Temp=1.0/Tf;
 		
+		Uni_AC(crystal, agav);
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
 		// if (t%1000==0)
@@ -268,7 +287,7 @@ void simulation::simulated_annealing()
 		// }
 
 		//if (t%50000==0 and t>=1000000)
-		if (t%10000==0)
+		if (t%1==0)
 		{
 			HK tavg(crystal);
 			tavg.Find_Cluster_periodic();
@@ -282,10 +301,6 @@ void simulation::simulated_annealing()
 			}
 			Navg<<t<<" "<<avg_size/((double) tavg.cluster_count())<<endl;
 		}
-		// if (acf=="yes")
-		// {
-		// 	Cluster_AC(crystal, t, slice, agav);
-		// }
 
 		if (t%50000==0)
 		{
@@ -328,28 +343,33 @@ void simulation::simulated_annealing()
 		// }
 	}
 
-	// ofstream AutoC;
-	// AutoC.open("Auto.dat");
-	// double chi_zero;
-	// for (int i=0; i<=Time; i++)
-	// {
-	// 	int diff=Time-slice[i];
-	// 	int max_bin=Time-i;
-	// 	double coeff=1.0/((double) diff);
+	ofstream AutoC;
+	AutoC.open("Auto.dat");
+	double chi_zero=0.0;
+	for (int i=0; i<=Time; i++)
+	{
+		int diff=Time-i;
+		
+		double coeff=1.0/((double) diff);
+		double chi=0.0,
+	            nChi=0.0;
 
-	// 	double chi=0.0;
-	// 	for (int j=0; j<=max_bin; j++)
-	// 	{
-	// 		chi+=coeff*agav[j]*agav[j+i];
-	// 		for (int k=0; k<=max_bin; k++)
-	// 		{
-	// 			chi-=coeff*coeff*agav[j]*agav[k+i];
-	// 		}
-	// 	}
-	// 	if (i==0){chi_zero=chi;}
-	// 	AutoC<<slice[i]<<" "<<chi/chi_zero<<endl;
-	// }
-	// AutoC.close();
+		for (int l=0; l<N; l++)
+		{
+			for (int j=0; j<=diff; j++)
+			{
+				chi+=coeff*agav[l][j]*agav[l][j+i];
+				for (int k=0; k<=diff; k++)
+				{
+					chi-=coeff*coeff*agav[l][j]*agav[l][k+i];
+				}
+			}
+			if(i==0){chi_zero=chi;}
+			nChi+=chi/chi_zero;
+		}
+		AutoC<<i<<" "<<nChi/N<<endl;
+	}
+	AutoC.close();
 
 	MDVT.close();
 	Navg.close();
@@ -394,6 +414,7 @@ void simulation::simulated_annealing()
 	HK Aggregate(crystal);
 	Aggregate.Find_Cluster_periodic();
 	Aggregate.print_cluster();
+	Aggregate.clusters_labelled();
 	int clusters=Aggregate.cluster_count();
 
 	for (int n=1; n<=Aggregate.max_label();n++)

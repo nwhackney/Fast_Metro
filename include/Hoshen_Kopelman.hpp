@@ -19,6 +19,7 @@ public:
 	int cluster_size(int label);
 	int cluster_count();
 	int max_label();
+	int index_to_label(int index);
 
 	double cluster_energy(int label);
 	double cluster_energy_periodic(int label);

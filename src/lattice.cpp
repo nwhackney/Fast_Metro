@@ -600,6 +600,11 @@ int lattice::size()
 	return L;
 }
 
+int lattice::occ_to_index(int i)
+{
+	return occ[i];
+}
+
 double lattice::angle(int i)
 {
 	return lattice[i].angle;

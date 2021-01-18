@@ -262,6 +262,14 @@ int HK::max_label()
 	return max_label;
 }
 
+int HK::index_to_label(int index)
+{
+	//cout<<system.occupied(index)<<endl;
+	int n=index%L,
+	    m=floor((double) index/ (double) L);
+	return matrix[m][n];
+}
+
 std::vector<double> HK::mean_distance_to_surface(int label)
 {
 	std::vector<int> distance;
