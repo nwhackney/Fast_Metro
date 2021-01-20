@@ -354,8 +354,9 @@ void simulation::simulated_annealing()
 		double chi=0.0,
 	            nChi=0.0;
 
-		for (int l=0; l<N; l++)
-		{
+	     int l=End_Time;
+		//for (int l=0; l<N; l++)
+		//{
 			for (int j=0; j<=diff; j++)
 			{
 				chi+=coeff*agav[l][j]*agav[l][j+i];
@@ -366,8 +367,8 @@ void simulation::simulated_annealing()
 			}
 			if(i==0){chi_zero=chi;}
 			nChi+=chi/chi_zero;
-		}
-		AutoC<<i<<" "<<nChi/N<<endl;
+		//}
+		AutoC<<i<<" "<<nChi<<endl;
 	}
 	AutoC.close();
 
