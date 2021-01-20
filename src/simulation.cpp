@@ -87,37 +87,37 @@ double Stepped(double t, double beta)
 
 	double interval=0.1-Temp;
 
-	if (0.0<=t and t<=500000.0) {T=1.0;}
-	else if (500000.0<t and t<=600000.0)
+	if (0.0<=t and t<=300000.0) {T=1.0;}
+	else if (300000.0<t and t<=400000.0)
 	{
-		double x = clamp((t-500000.0) / (100000.0), 0.0, 1.0);
+		double x = clamp((t-300000.0) / (100000.0), 0.0, 1.0);
 		T=1.0-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (600000.0<t and t<=1100000.0) {T=0.75;}
+	else if (400000.0<t and t<=700000.0) {T=0.75;}
+	else if (700000.0<t and t<=800000.0)
+	{
+		double x = clamp((t-700000.0) / (100000.0), 0.0, 1.0);
+		T=0.75-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (800000.0<t and t<=1100000.0) {T=0.5;}
 	else if (1100000.0<t and t<=1200000.0)
 	{
 		double x = clamp((t-1100000.0) / (100000.0), 0.0, 1.0);
-		T=0.75-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1200000.0<t and t<=1700000.0) {T=0.5;}
-	else if (1700000.0<t and t<=1800000.0)
-	{
-		double x = clamp((t-1700000.0) / (100000.0), 0.0, 1.0);
 		T=0.5-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (1800000.0<t and t<=2300000.0) {T=0.25;}
-	else if (2300000.0<t and t<=2400000.0)
+	else if (1200000.0<t and t<=1500000.0) {T=0.25;}
+	else if (1500000.0<t and t<=1800000.0)
 	{
-		double x = clamp((t-2300000.0) / (100000.0), 0.0, 1.0);
+		double x = clamp((t-1600000.0) / (120000.0), 0.0, 1.0);
 		T=0.25-0.15*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (2400000.0<t and t<=3000000.0) {T=0.1;}
-	else if (3000000.0<t and t<=4000000.0)
+	else if (1800000.0<t and t<=2200000.0) {T=0.1;}
+	else if (2200000.0<t and t<=3200000.0)
 	{
-		double x = clamp((t-3000000.0) / (1000000.0), 0.0, 1.0);
+		double x = clamp((t-2200000.0) / (1000000.0), 0.0, 1.0);
 		T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (4000000.0<t and t<=5000000.0) {T=Temp;}
+	else if (3200000.0<t and t<=4200000.0) {T=Temp;}
 	
 	return T;
 }
@@ -267,9 +267,9 @@ void simulation::simulated_annealing()
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		//Temp=Stepped(t,Tf);
+		Temp=Stepped(t,Tf);
 		//Temp=No_Step(t,Tf);
-		Temp=1.0/Tf;
+		//Temp=1.0/Tf;
 		
 		Uni_AC(crystal, agav);
 		crystal.Metropolis(Temp,Edat,accepted, r);
@@ -286,22 +286,6 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		//if (t%50000==0 and t>=1000000)
-		if (t%1==0)
-		{
-			HK tavg(crystal);
-			tavg.Find_Cluster_periodic();
-
-			double avg_size=0.0;
-			int labl=tavg.max_label();
-			for (int i=1; i<=labl; i++)
-			{
-				int nc=tavg.cluster_size(i);
-				avg_size+=(double) nc;
-			}
-			Navg<<t<<" "<<avg_size/((double) tavg.cluster_count())<<endl;
-		}
-
 		if (t%50000==0)
 		{
 			stringstream inter;
@@ -314,6 +298,15 @@ void simulation::simulated_annealing()
 			aggfile.open(agg.str());
 			HK clump(crystal);
 			clump.Find_Cluster_periodic();
+
+			double avg_size=0.0;
+			int labl=clump.max_label();
+			for (int j=1; j<=labl; j++)
+			{
+				int nc=clump.cluster_size(j);
+				avg_size+=(double) nc;
+			}
+			Navg<<t<<" "<<avg_size/((double) clump.cluster_count())<<endl;
 
 			double meanD=0.0;
 			int lbl=clump.max_label();
@@ -354,7 +347,7 @@ void simulation::simulated_annealing()
 		double chi=0.0,
 	            nChi=0.0;
 
-	     int l=End_Time;
+	     int l=end_time;
 		//for (int l=0; l<N; l++)
 		//{
 			for (int j=0; j<=diff; j++)
