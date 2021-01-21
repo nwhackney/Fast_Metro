@@ -286,7 +286,7 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		if (t%50000==0)
+		if (t%50==0)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -313,10 +313,11 @@ void simulation::simulated_annealing()
 			for (int i=1; i<=lbl; i++)
 			{
 				int ncl=clump.cluster_size(i);
-				meanD += clump.distance_to_surface_periodic(i);
+				double dts = clump.distance_to_surface_periodic(i);
+				meanD += dts;
 				if (ncl>=1)
 				{
-					aggfile<<ncl<<endl;
+					aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
 				}
 			}
 			aggfile.close();
