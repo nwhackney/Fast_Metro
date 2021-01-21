@@ -271,7 +271,7 @@ void simulation::simulated_annealing()
 		//Temp=No_Step(t,Tf);
 		//Temp=1.0/Tf;
 		
-		Uni_AC(crystal, agav);
+		//Uni_AC(crystal, agav);
 		crystal.Metropolis(Temp,Edat,accepted, r);
 
 		// if (t%1000==0)
@@ -336,34 +336,34 @@ void simulation::simulated_annealing()
 		// }
 	}
 
-	ofstream AutoC;
-	AutoC.open("Auto.dat");
-	double chi_zero=0.0;
-	for (int i=0; i<=Time; i++)
-	{
-		int diff=Time-i;
+	// ofstream AutoC;
+	// AutoC.open("Auto.dat");
+	// double chi_zero=0.0;
+	// for (int i=0; i<=Time; i++)
+	// {
+	// 	int diff=Time-i;
 		
-		double coeff=1.0/((double) diff);
-		double chi=0.0,
-	            nChi=0.0;
+	// 	double coeff=1.0/((double) diff);
+	// 	double chi=0.0,
+	//             nChi=0.0;
 
-	     int l=end_time;
-		//for (int l=0; l<N; l++)
-		//{
-			for (int j=0; j<=diff; j++)
-			{
-				chi+=coeff*agav[l][j]*agav[l][j+i];
-				for (int k=0; k<=diff; k++)
-				{
-					chi-=coeff*coeff*agav[l][j]*agav[l][k+i];
-				}
-			}
-			if(i==0){chi_zero=chi;}
-			nChi+=chi/chi_zero;
-		//}
-		AutoC<<i<<" "<<nChi<<endl;
-	}
-	AutoC.close();
+	//      int l=end_time;
+	// 	//for (int l=0; l<N; l++)
+	// 	//{
+	// 		for (int j=0; j<=diff; j++)
+	// 		{
+	// 			chi+=coeff*agav[l][j]*agav[l][j+i];
+	// 			for (int k=0; k<=diff; k++)
+	// 			{
+	// 				chi-=coeff*coeff*agav[l][j]*agav[l][k+i];
+	// 			}
+	// 		}
+	// 		if(i==0){chi_zero=chi;}
+	// 		nChi+=chi/chi_zero;
+	// 	//}
+	// 	AutoC<<i<<" "<<nChi<<endl;
+	// }
+	// AutoC.close();
 
 	MDVT.close();
 	Navg.close();
