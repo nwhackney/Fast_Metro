@@ -259,17 +259,17 @@ void simulation::simulated_annealing()
 	// End Temp
 
 	vector<double> slice;
-	vector< vector<double> > agav;
-	agav.resize(N);
+	// vector< vector<double> > agav;
+	// agav.resize(N);
 
 	for (int t=restart_t; t<Time; t++)
 	{
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Stepped(t,Tf);
+		//Temp=Stepped(t,Tf);
 		//Temp=No_Step(t,Tf);
-		//Temp=1.0/Tf;
+		Temp=1.0/Tf;
 		
 		//Uni_AC(crystal, agav);
 		crystal.Metropolis(Temp,Edat,accepted, r);
@@ -286,7 +286,7 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		if (t%50==0)
+		if (t%50000==0)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -348,9 +348,9 @@ void simulation::simulated_annealing()
 	// 	double chi=0.0,
 	//             nChi=0.0;
 
-	//      int l=end_time;
-	// 	//for (int l=0; l<N; l++)
-	// 	//{
+	//      //int l=end_time;
+	// 	for (int l=0; l<N; l++)
+	// 	{
 	// 		for (int j=0; j<=diff; j++)
 	// 		{
 	// 			chi+=coeff*agav[l][j]*agav[l][j+i];
@@ -361,8 +361,8 @@ void simulation::simulated_annealing()
 	// 		}
 	// 		if(i==0){chi_zero=chi;}
 	// 		nChi+=chi/chi_zero;
-	// 	//}
-	// 	AutoC<<i<<" "<<nChi<<endl;
+	// 	}
+	// 	AutoC<<i<<" "<<nChi/N<<endl;
 	// }
 	// AutoC.close();
 
