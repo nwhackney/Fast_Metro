@@ -122,6 +122,44 @@ double Stepped(double t, double beta)
 	return T;
 }
 
+double QUENCH(double t, double beta)
+{
+	double T=0.0;
+
+	double Temp=1.0/beta;
+
+	double i1=1.0-Temp;
+	double interval=0.1-Temp;
+
+	if (0.0<=t and t<=100000.0) {T=1.0;}
+	else if (100000.0<t and t<=1000000.0)
+	{
+		double x = clamp((t-100000.0) / (900000.0), 0.0, 1.0);
+		T=1.0-i1*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1000000.0<t and t<=1200000.0) {T=Temp;}
+	else if (1200000.0<t and t<=2000000.0)
+	{
+		double x = clamp((t-1200000.0) / (800000.0), 0.0, 1.0);
+		T=Temp+(0.2-Temp)*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (2000000.0<t and t<=3000000.0) {T=0.2;}
+	else if (3000000.0<t and t<=3500000.0)
+	{
+		double x = clamp((t-3000000.0) / (500000.0), 0.0, 1.0);
+		T=0.2-0.1*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (3500000.0<t and t<=4000000.0) {T=0.1;}
+	else if (4000000.0<t and t<=5000000.0)
+	{
+		double x = clamp((t-4000000.0) / (1000000.0), 0.0, 1.0);
+		T=0.1-(0.1-Temp)*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (5000000.0<t and t<=6000000.0) {T=Temp;}
+	
+	return T;
+}
+
 double No_Step(double t, double beta)
 {
 	double T=0.0,
@@ -267,7 +305,7 @@ void simulation::simulated_annealing()
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=Stepped(t,Tf);
+		Temp=QUENCH(t,Tf);
 		//Temp=No_Step(t,Tf);
 		//Temp=1.0/Tf;
 		
