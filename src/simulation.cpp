@@ -305,8 +305,8 @@ void simulation::simulated_annealing()
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
-		Temp=QUENCH(t,Tf);
-		//Temp=No_Step(t,Tf);
+		//Temp=QUENCH(t,Tf);
+		Temp=Stepped(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
