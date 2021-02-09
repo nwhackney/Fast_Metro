@@ -122,40 +122,61 @@ double Stepped(double t, double beta)
 	return T;
 }
 
-double QUENCH(double t, double beta)
+double Elongated(double t, double beta)
 {
 	double T=0.0;
 
-	double Temp=1.0/beta;
+		double Temp=1.0/beta;
 
-	double i1=1.0-Temp;
-	double interval=0.1-Temp;
+		double interval=(0.1-Temp)/3.0;
 
-	if (0.0<=t and t<=100000.0) {T=1.0;}
-	else if (100000.0<t and t<=1000000.0)
-	{
-		double x = clamp((t-100000.0) / (900000.0), 0.0, 1.0);
-		T=1.0-i1*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (1000000.0<t and t<=1200000.0) {T=Temp;}
-	else if (1200000.0<t and t<=2000000.0)
-	{
-		double x = clamp((t-1200000.0) / (800000.0), 0.0, 1.0);
-		T=Temp+(0.2-Temp)*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (2000000.0<t and t<=3000000.0) {T=0.2;}
-	else if (3000000.0<t and t<=3500000.0)
-	{
-		double x = clamp((t-3000000.0) / (500000.0), 0.0, 1.0);
-		T=0.2-0.1*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (3500000.0<t and t<=4000000.0) {T=0.1;}
-	else if (4000000.0<t and t<=5000000.0)
-	{
-		double x = clamp((t-4000000.0) / (1000000.0), 0.0, 1.0);
-		T=0.1-(0.1-Temp)*x*x*x*(x*(x*6.0-15.0)+10.0);
-	}
-	else if (5000000.0<t and t<=6000000.0) {T=Temp;}
+		double TS1=0.1-interval,
+			  TS2=TS1-interval,
+			  TS3=TS2-interval;
+
+		if (0.0<=t and t<=250000.0) {T=1.0;}
+		else if (250000.0<t and t<=260000.0)
+		{
+			double x = clamp((t-250000.0) / (100000.0), 0.0, 1.0);
+			T=1.0-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (260000.0<t and t<=510000.0) {T=0.75;}
+		else if (510000.0<t and t<=520000.0)
+		{
+			double x = clamp((t-510000.0) / (100000.0), 0.0, 1.0);
+			T=0.75-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (520000.0<t and t<=770000.0) {T=0.5;}
+		else if (770000.0<t and t<=780000.0)
+		{
+			double x = clamp((t-770000.0) / (100000.0), 0.0, 1.0);
+			T=0.5-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (780000.0<t and t<=1030000.0) {T=0.25;}
+		else if (1030000.0<t and t<=1040000.0)
+		{
+			double x = clamp((t-1030000.0) / (100000.0), 0.0, 1.0);
+			T=0.25-0.15*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (1040000.0<t and t<=1500000.0) {T=0.1;}
+		else if (1500000.0<t and t<=2000000.0)
+		{
+			double x = clamp((t-1500000.0) / (500000.0), 0.0, 1.0);
+			T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (2000000.0<t and t<=3000000.0) {T=TS1;}
+		else if (3000000.0<t and t<=3500000.0)
+		{
+			double x = clamp((t-3000000.0) / (500000.0), 0.0, 1.0);
+			T=TS1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (3500000.0<t and t<=4500000.0) {T=TS2;}
+		else if (4500000.0<t and t<=5000000.0)
+		{
+			double x = clamp((t-4500000.0) / (500000.0), 0.0, 1.0);
+			T=TS2-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+		}
+		else if (5000000.0<t and t<=6000000.0) {T=TS3;}
 	
 	return T;
 }
@@ -306,7 +327,7 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=Stepped(t,Tf);
+		Temp=Elongated(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
