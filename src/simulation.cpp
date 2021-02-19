@@ -122,6 +122,49 @@ double Stepped(double t, double beta)
 	return T;
 }
 
+double Stepped_Long(double t, double beta)
+{
+	double T=0.0;
+
+	double Temp=1.0/beta;
+
+	double interval=0.1-Temp;
+
+	if (0.0<=t and t<=1000000.0) {T=1.0;}
+	else if (1000000.0<t and t<=1200000.0)
+	{
+		double x = clamp((t-1000000.0) / (200000.0), 0.0, 1.0);
+		T=1.0-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (1200000.0<t and t<=2200000.0) {T=0.75;}
+	else if (2200000.0<t and t<=2400000.0)
+	{
+		double x = clamp((t-2200000.0) / (200000.0), 0.0, 1.0);
+		T=0.75-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (2400000.0<t and t<=3400000.0) {T=0.5;}
+	else if (3400000.0<t and t<=3600000.0)
+	{
+		double x = clamp((t-3400000.0) / (200000.0), 0.0, 1.0);
+		T=0.5-0.25*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (3600000.0<t and t<=4600000.0) {T=0.25;}
+	else if (4600000.0<t and t<=4800000.0)
+	{
+		double x = clamp((t-4600000.0) / (200000.0), 0.0, 1.0);
+		T=0.25-0.15*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (4800000.0<t and t<=5800000.0) {T=0.1;}
+	else if (5800000.0<t and t<=8000000.0)
+	{
+		double x = clamp((t-5800000.0) / (2200000.0), 0.0, 1.0);
+		T=0.1-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
+	}
+	else if (8000000.0<t and t<=12000000.0) {T=Temp;}
+	
+	return T;
+}
+
 double Elongated(double t, double beta)
 {
 	double T=0.0;
@@ -327,7 +370,7 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=Elongated(t,Tf);
+		Temp=Stepped_Long(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
