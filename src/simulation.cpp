@@ -231,12 +231,12 @@ double No_Step(double t, double beta)
 
 	double interval=1.0-Temp;
 
-	if (0.0<=t and t<=1000000.0)
+	if (0.0<=t and t<=4000000.0)
 	{
-		double x = clamp((t) / (1000000.0), 0.0, 1.0);
+		double x = clamp((t) / (4000000.0), 0.0, 1.0);
 		T=1.0-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (1000000.0<t and t<=2000000) {T=Temp;}
+	else if (4000000.0<t and t<=5000000) {T=Temp;}
 	
 	return T;
 }
@@ -331,8 +331,8 @@ void simulation::simulated_annealing()
 	glide_acc.open("Glide_Acceptance.dat");
 	loc_acc.open("Local_Acceptance.dat");
 
-	ofstream MDVT;
-	MDVT.open("mdvt.dat");
+	// ofstream MDVT;
+	// MDVT.open("mdvt.dat");
 
 	ofstream Navg;
 	Navg.open("Navg.dat");
@@ -370,7 +370,7 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=Stepped_Long(t,Tf);
+		Temp=No_Step(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
@@ -388,7 +388,7 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		if (t%50000==0)
+		if (t%5000==0)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -396,35 +396,41 @@ void simulation::simulated_annealing()
 
 			stringstream agg;
 			agg<<"agg_"<<t;
-			ofstream aggfile;
-			aggfile.open(agg.str());
-			HK clump(crystal);
-			clump.Find_Cluster_periodic();
+			crystal.print_data(agg.str());
 
-			double avg_size=0.0;
-			int labl=clump.max_label();
-			for (int j=1; j<=labl; j++)
-			{
-				int nc=clump.cluster_size(j);
-				avg_size+=(double) nc;
-			}
-			Navg<<t<<" "<<avg_size/((double) clump.cluster_count())<<endl;
+			// Commented For Movie
 
-			double meanD=0.0;
-			int lbl=clump.max_label();
-			for (int i=1; i<=lbl; i++)
-			{
-				int ncl=clump.cluster_size(i);
-				double dts = clump.distance_to_surface_periodic(i);
-				meanD += dts;
-				if (ncl>=1)
-				{
-					aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
-				}
-			}
-			aggfile.close();
+			// ofstream aggfile;
+			// aggfile.open(agg.str());
+			// HK clump(crystal);
+			// clump.Find_Cluster_periodic();
 
-			MDVT<<t<<" "<<meanD/N<<endl;
+			// double avg_size=0.0;
+			// int labl=clump.max_label();
+			// for (int j=1; j<=labl; j++)
+			// {
+			// 	int nc=clump.cluster_size(j);
+			// 	avg_size+=(double) nc;
+			// }
+			// Navg<<t<<" "<<avg_size/((double) clump.cluster_count())<<endl;
+
+			// double meanD=0.0;
+			// int lbl=clump.max_label();
+			// for (int i=1; i<=lbl; i++)
+			// {
+			// 	int ncl=clump.cluster_size(i);
+			// 	double dts = clump.distance_to_surface_periodic(i);
+			// 	meanD += dts;
+			// 	if (ncl>=1)
+			// 	{
+			// 		aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
+			// 	}
+			// }
+			// aggfile.close();
+
+			// MDVT<<t<<" "<<meanD/N<<endl;
+
+			// Above Commented for Movie
 		}
 
 		// if (t%50000==0 and t>=2000000)
@@ -468,7 +474,7 @@ void simulation::simulated_annealing()
 	// }
 	// AutoC.close();
 
-	MDVT.close();
+	//MDVT.close();
 	Navg.close();
 
 	ofstream SC;
