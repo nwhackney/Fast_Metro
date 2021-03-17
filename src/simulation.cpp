@@ -219,7 +219,7 @@ double Elongated(double t, double beta)
 			double x = clamp((t-4500000.0) / (500000.0), 0.0, 1.0);
 			T=TS2-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 		}
-		else if (5000000.0<t and t<=6000000.0) {T=TS3;}
+		else if (5000000.0<t and t<=8000000.0) {T=TS3;}
 	
 	return T;
 }
@@ -370,7 +370,7 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=No_Step(t,Tf);
+		Temp=Elongated(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
