@@ -70,6 +70,8 @@ void simulation::read_config()
 	acf=ACF->as<string>();
 }
 
+//Temperature Schedules Below
+
 float clamp(float x, float lowerlimit, float upperlimit)
 {
   if (x < lowerlimit)
@@ -241,6 +243,8 @@ double No_Step(double t, double beta)
 	return T;
 }
 
+// Temperature Schedules Above
+
 void Cluster_AC(lattice &tc, int t, vector<double> &time, vector<double> &avg)
 {
 	HK current(tc);
@@ -331,8 +335,8 @@ void simulation::simulated_annealing()
 	glide_acc.open("Glide_Acceptance.dat");
 	loc_acc.open("Local_Acceptance.dat");
 
-	// ofstream MDVT;
-	// MDVT.open("mdvt.dat");
+	ofstream MDVT;
+	MDVT.open("mdvt.dat");
 
 	ofstream Navg;
 	Navg.open("Navg.dat");
@@ -370,7 +374,7 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=Elongated(t,Tf);
+		Temp=Stepped(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
@@ -388,7 +392,7 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		if (t%5000==0)
+		if (t%50000==0)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -400,35 +404,35 @@ void simulation::simulated_annealing()
 
 			// Commented For Movie
 
-			// ofstream aggfile;
-			// aggfile.open(agg.str());
-			// HK clump(crystal);
-			// clump.Find_Cluster_periodic();
+			ofstream aggfile;
+			aggfile.open(agg.str());
+			HK clump(crystal);
+			clump.Find_Cluster_periodic();
 
-			// double avg_size=0.0;
-			// int labl=clump.max_label();
-			// for (int j=1; j<=labl; j++)
-			// {
-			// 	int nc=clump.cluster_size(j);
-			// 	avg_size+=(double) nc;
-			// }
-			// Navg<<t<<" "<<avg_size/((double) clump.cluster_count())<<endl;
+			double avg_size=0.0;
+			int labl=clump.max_label();
+			for (int j=1; j<=labl; j++)
+			{
+				int nc=clump.cluster_size(j);
+				avg_size+=(double) nc;
+			}
+			Navg<<t<<" "<<avg_size/((double) clump.cluster_count())<<endl;
 
-			// double meanD=0.0;
-			// int lbl=clump.max_label();
-			// for (int i=1; i<=lbl; i++)
-			// {
-			// 	int ncl=clump.cluster_size(i);
-			// 	double dts = clump.distance_to_surface_periodic(i);
-			// 	meanD += dts;
-			// 	if (ncl>=1)
-			// 	{
-			// 		aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
-			// 	}
-			// }
-			// aggfile.close();
+			double meanD=0.0;
+			int lbl=clump.max_label();
+			for (int i=1; i<=lbl; i++)
+			{
+				int ncl=clump.cluster_size(i);
+				double dts = clump.distance_to_surface_periodic(i);
+				meanD += dts;
+				if (ncl>=1)
+				{
+					aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
+				}
+			}
+			aggfile.close();
 
-			// MDVT<<t<<" "<<meanD/N<<endl;
+			MDVT<<t<<" "<<meanD/N<<endl;
 
 			// Above Commented for Movie
 		}
