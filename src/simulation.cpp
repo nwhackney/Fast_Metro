@@ -233,12 +233,12 @@ double No_Step(double t, double beta)
 
 	double interval=1.0-Temp;
 
-	if (0.0<=t and t<=4000000.0)
+	if (0.0<=t and t<=6000000.0)
 	{
-		double x = clamp((t) / (4000000.0), 0.0, 1.0);
+		double x = clamp((t) / (6000000.0), 0.0, 1.0);
 		T=1.0-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (4000000.0<t and t<=5000000) {T=Temp;}
+	else if (6000000.0<t and t<=8000000) {T=Temp;}
 	
 	return T;
 }
@@ -374,7 +374,7 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=Stepped(t,Tf);
+		Temp=No_Step(t,Tf);
 		//Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
