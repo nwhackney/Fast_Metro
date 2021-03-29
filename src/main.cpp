@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "../include/gsl/gsl_rng.h"
-#include "../include/lattice.hpp"
+//#include "../include/lattice.hpp"
 #include "../include/simulation.hpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 

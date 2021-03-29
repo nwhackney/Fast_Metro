@@ -237,6 +237,106 @@ void lattice::Spin_Metropolis(double T, std::ofstream &Efile, std::vector<double
 	}
 }
 
+void lattice::Local_Metropolis(double T, std::ofstream &Efile, std::vector<double> &accepted, gsl_rng * rng) // Metropolis Algorithm with only local moves. Use to validate Auto Correlation Functions
+{
+	double Total_Energy=H();
+	Efile<<Total_Energy<<std::endl;
+	for (int i=0; i<N; i++)
+	{
+		int n=occ[i];
+		double E=H_local(n);
+
+		std::vector<site> saved = lattice;
+
+		//int flag=rand()%4;
+		int flag=gsl_rng_get(rng)%2;
+		//int flag=0;
+
+		if (flag==0) // Rotation
+		{
+			accepted[0]+=1.0;
+			
+			//double width = 3.1415962;
+			//double delta=2.0*(gsl_rng_uniform(rng)-0.5);
+			//double theta=lattice[n].angle+delta*width;
+
+			double width = 0.1*exp(1.5*T);
+			double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
+			rotate(n,theta);
+			double Trial_E=H_local(n);
+			double delE = Trial_E - E;
+			
+			double alpha = gsl_rng_uniform(rng);
+			double U= exp(-1*delE/T);
+			if (alpha > fmin(1.0,U))
+			{
+				lattice=saved;
+			}
+			else {accepted[1]+=1.0;}
+		}
+		else // Local Translation
+		{
+			int slide=gsl_rng_get(rng)%4;
+			int slot;
+			
+			if (slide==0)                     // Up
+			{
+				slot=(n-L)%V;
+				if (slot<0){slot=slot+V;}
+			}
+			else if (slide==1){slot=(n+L)%V;} // Down
+			else if (slide==2)                // Left
+			{
+				slot=(n-1)%V;
+				if (slot<0){slot=slot+V;}
+			}
+			else              {slot=(n+1)%V;} // Right
+			int VS=V-N;
+			int m=-1;
+			for (int j=0; j<VS; j++)
+			{
+				if (vac[j]==slot)
+				{
+					m=j;
+					break; // Should this break be there to speed things up? (I just added it...)
+				}
+			}
+			
+			if (m==-1) {continue;}
+			
+			accepted[6]+=1.0;
+			
+			std::vector<int> occ_saved = occ;
+			std::vector<int> vac_saved = vac;
+			
+			double theta = lattice[n].angle;
+			
+			site Null; Null.occ=0; Null.angle=0.0;
+			site Spin; Spin.occ=1; Spin.angle=theta;
+			
+			lattice.at(n)=Null;
+			lattice.at(slot)=Spin;
+			
+			occ[i]=slot; vac[m]=n;
+			
+			double Trial_E=H_local(slot);
+			
+			double delE = Trial_E - E;
+			//double alpha = ((double) rand()/(double)RAND_MAX);
+			double alpha=gsl_rng_uniform(rng);
+
+			double U= exp(-1*delE/T);
+			if (alpha > fmin(1.0,U))
+			{
+				lattice=saved;
+				occ=occ_saved;
+				vac=vac_saved;
+			}
+			else {accepted[7]+=1.0;}
+		}
+	}
+}
+
 void lattice::check()
 {
 	//std::cout<<"Volume: "<<V<<" Array Size: "<<lattice.size()<<std::endl;
