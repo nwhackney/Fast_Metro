@@ -301,8 +301,8 @@ void simulation::simulated_annealing()
 	}
 	else
 	{
-		crystal.init(L,N,r);
-		//crystal.rect_init(Num_Rep,Num_Rep,r);
+		//crystal.init(L,N,r);
+		crystal.rect_init(Num_Rep,Num_Rep,L,r);
 		//crystal.ribbon_init(L,Num_Rep,r);
 		crystal.print_data("init");	
 	}
@@ -374,8 +374,8 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=No_Step(t,Tf);
-		//Temp=1.0/Tf;
+		//Temp=No_Step(t,Tf);
+		Temp=1.0/Tf;
 		
 		crystal.Metropolis(Temp,Edat,accepted, r);
 		//Uni_AC(crystal, agav);

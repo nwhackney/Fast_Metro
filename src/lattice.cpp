@@ -405,17 +405,17 @@ void lattice::init(int lattice_size, int Number, gsl_rng * rng)
 	//std::cout<<occ.size()<<" "<<vac.size()<<" "<<occ.size()+vac.size()<<std::endl;
 }
 
-void lattice::rect_init(int Lx, int Ly, gsl_rng * rng)
+void lattice::rect_init(int Lx, int Ly, int W, gsl_rng * rng)
 {
 	
 	if (Lx>=Ly)
 	{
-		V=(Lx+2)*(Lx+2);
+		V=W*W;//(Lx+2)*(Lx+2);
 		L=Lx+2;
 	}
 	else if (Ly>Lx)
 	{
-		V=(Ly+2)*(Ly*2);
+		V=W*W;//(Ly+2)*(Ly*2);
 		L=Ly+2;
 	}
 
