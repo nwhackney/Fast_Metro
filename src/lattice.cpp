@@ -405,7 +405,47 @@ void lattice::init(int lattice_size, int Number, gsl_rng * rng)
 	//std::cout<<occ.size()<<" "<<vac.size()<<" "<<occ.size()+vac.size()<<std::endl;
 }
 
-void lattice::rect_init(int Lx, int Ly, int W, gsl_rng * rng)
+void lattice::square_init(int lattice_size, int W, gsl_rng * rng)
+{
+	L=lattice_size;
+	N=W*W;
+	V=L*L;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	lattice.resize(V,Null);
+	occ.resize(N);
+	vac.resize(V-N);
+
+	int count=0;
+	for (int i=0; i<W;i++)
+	{
+		for (int j=0; j<W; j++)
+		{
+			int n = (i+21)*L+(j+21);
+			lattice[n].occ=1;
+
+			double theta = gsl_rng_uniform(rng)*6.283185307179586;
+			lattice[n].angle=theta;
+
+			occ[count]=n; count++;
+		}
+	}
+
+	int m=0;
+	for (int i=0; i<V; i++)
+	{
+		if (lattice[i].occ==0)
+		{
+			vac[m]=i;
+			m++;
+		}
+	}
+}
+
+void lattice::rect_init(int Lx, int Ly, int W, gsl_rng * rng) // No longer works
 {
 	
 	if (Lx>=Ly)

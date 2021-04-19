@@ -302,7 +302,7 @@ void simulation::simulated_annealing()
 	else
 	{
 		//crystal.init(L,N,r);
-		crystal.rect_init(Num_Rep,Num_Rep,L,r);
+		crystal.square_init(L,Num_Rep,r);
 		//crystal.ribbon_init(L,Num_Rep,r);
 		crystal.print_data("init");	
 	}
