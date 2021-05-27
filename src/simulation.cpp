@@ -245,6 +245,8 @@ double No_Step(double t, double beta)
 
 // Temperature Schedules Above
 
+// Auto-Correlation Functions ~Attempts~ Below
+
 void Cluster_AC(lattice &tc, int t, vector<double> &time, vector<double> &avg)
 {
 	HK current(tc);
@@ -280,6 +282,8 @@ void Uni_AC(lattice &tc, vector< vector<double> > &avg)
 		avg[n].push_back(size);	
 	}
 }
+
+// Auto-Correlation Functions ~Attempts~ Above
 
 void simulation::simulated_annealing()
 {
@@ -370,6 +374,7 @@ void simulation::simulated_annealing()
 
 	for (int t=restart_t; t<Time; t++)
 	{
+		// Selects annealing schedule and calculates temperature
 		// slope=10.0/(slp);
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
@@ -377,7 +382,7 @@ void simulation::simulated_annealing()
 		//Temp=No_Step(t,Tf);
 		Temp=1.0/Tf;
 		
-		crystal.Metropolis(Temp,Edat,accepted, r);
+		crystal.Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
 		//Uni_AC(crystal, agav);
 
 		// if (t%1000==0)
@@ -406,12 +411,12 @@ void simulation::simulated_annealing()
 
 			ofstream aggfile;
 			aggfile.open(agg.str());
-			HK clump(crystal);
-			clump.Find_Cluster_periodic();
+			HK clump(crystal);				// Hoshen-Kopelman (HK) object for finding/counting clusters
+			clump.Find_Cluster_periodic();	// Identifies clusters
 
 			double avg_size=0.0;
 			int labl=clump.max_label();
-			for (int j=1; j<=labl; j++)
+			for (int j=1; j<=labl; j++)		// Finds average cluster size
 			{
 				int nc=clump.cluster_size(j);
 				avg_size+=(double) nc;
@@ -420,7 +425,7 @@ void simulation::simulated_annealing()
 
 			double meanD=0.0;
 			int lbl=clump.max_label();
-			for (int i=1; i<=lbl; i++)
+			for (int i=1; i<=lbl; i++)		// Finds Mean distance to surface
 			{
 				int ncl=clump.cluster_size(i);
 				double dts = clump.distance_to_surface_periodic(i);
@@ -508,7 +513,7 @@ void simulation::simulated_annealing()
 	stringstream info;
 	info<<"info_"<<out_file<<".dat";
 
-	ofstream inf;
+	ofstream inf;						// Prints Info File
 	inf.open(info.str());
 	inf<<L<<"x"<<L<<" lattice"<<endl;
 	inf<<N<<" spin sites"<<endl;
