@@ -42,7 +42,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 		int n=occ[i];
 		double E=H_local(n);
 
-		std::vector<site> saved = lattice;
+		// std::vector<site> saved = lattice; // Don't save entire lattice like this...
 
 		//int flag=rand()%4;
 		int flag=gsl_rng_get(rng)%4;
@@ -56,6 +56,8 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			//double delta=2.0*(gsl_rng_uniform(rng)-0.5);
 			//double theta=lattice[n].angle+delta*width;
 
+			site saved; saved=lattice[n];
+
 			double width = 0.1*exp(1.5*T);
 			double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
 			rotate(n,theta);
@@ -66,7 +68,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
-				lattice=saved;
+				lattice.at(n)=saved;
 			}
 			else {accepted[1]+=1.0;}
 		}
@@ -76,6 +78,9 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 
 			int unocc= gsl_rng_get(rng)%(V-N);
 			int m=vac[unocc];
+
+			site osaved; osaved=lattice[n];
+			site unosaved; unosaved=lattice[m];
 
 			double phi=lattice[n].angle;
 
@@ -94,8 +99,11 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double U= exp(-1.0*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
-				lattice.clear();
-				lattice=saved;
+				// lattice.clear();
+				// lattice=saved;
+
+				lattice.at(n)=osaved;
+				lattice.at(m)=unosaved;
 			}
 			else
 			{
@@ -103,7 +111,6 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 				vac[unocc]=n;
 				accepted[3]+=1.0;
 			}
-
 		}
 		else if (flag==2) // Translation + Rotation
 		{
@@ -111,6 +118,9 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			
 			int unocc= gsl_rng_get(rng)%(V-N);
 			int m=vac[unocc];
+
+			site osaved; osaved=lattice[n];
+			site unosaved; unosaved=lattice[m];
 			
 			double theta = gsl_rng_uniform(rng)*6.283185307179586;
 			
@@ -128,7 +138,9 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
-				lattice=saved;
+				//lattice=saved;
+				lattice.at(n)=osaved;
+				lattice.at(m)=unosaved;
 			}
 			else
 			{
@@ -169,8 +181,14 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			
 			accepted[6]+=1.0;
 			
-			std::vector<int> occ_saved = occ;
-			std::vector<int> vac_saved = vac;
+			// std::vector<int> occ_saved = occ;
+			// std::vector<int> vac_saved = vac;
+
+			int occ_saved=occ[i],
+			    vac_saved=vac[m];
+
+			site nsaved; nsaved=lattice[n];
+			site slotsaved; slotsaved=lattice[slot];
 			
 			double theta = lattice[n].angle;
 			
@@ -179,7 +197,7 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			
 			lattice.at(n)=Null;
 			lattice.at(slot)=Spin;
-			
+
 			occ[i]=slot; vac[m]=n;
 			
 			double Trial_E=H_local(slot);
@@ -191,9 +209,15 @@ void lattice::Metropolis(double T, std::ofstream &Efile, std::vector<double> &ac
 			double U= exp(-1*delE/T);
 			if (alpha > fmin(1.0,U))
 			{
-				lattice=saved;
-				occ=occ_saved;
-				vac=vac_saved;
+				lattice.at(n)=nsaved;
+				lattice.at(slot)=slotsaved;
+
+				occ[i]=occ_saved;
+				vac[m]=vac_saved;
+
+				// lattice=saved;
+				// occ=occ_saved;
+				// vac=vac_saved;
 			}
 			else {accepted[7]+=1.0;}
 		}
