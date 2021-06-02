@@ -1,5 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -Wall  -g
+CXXFLAGS = -std=c++14 -Wall -O3 -fprofile-generate=./profiles
+#CXXFLAGS = -std=c++14 -Wall -O3 -fprofile-use=../profiles
 
 GSLLIBS = -L/usr/local/lib -lgsl -lgslcblas
 GSLINCS = -I/usr/local/include
