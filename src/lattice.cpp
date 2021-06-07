@@ -234,15 +234,9 @@ void lattice::Spin_Metropolis(double T, std::ofstream &Efile, std::vector<double
 		int n=occ[i];
 		double E=H_local(n);
 
-		std::vector<site> saved = lattice;
-
-		//int flag=rand()%4;
-		
 		accepted[0]+=1.0;
-		
-		//double width = 3.1415962;
-		//double delta=2.0*(gsl_rng_uniform(rng)-0.5);
-		//double theta=lattice[n].angle+delta*width;
+
+		site saved; saved=lattice[n];
 
 		double width = 0.1*exp(1.5*T);
 		double theta = Box_Muller(lattice[n].angle,width,rng); // Maybe should switch to a gsl gaussian random distribution, instead of "hacking" the Box_Muller Function (twould be more elegante)
@@ -254,7 +248,7 @@ void lattice::Spin_Metropolis(double T, std::ofstream &Efile, std::vector<double
 		double U= exp(-1*delE/T);
 		if (alpha > fmin(1.0,U))
 		{
-			lattice=saved;
+			lattice.at(n)=saved;
 		}
 		else {accepted[1]+=1.0;}
 		
