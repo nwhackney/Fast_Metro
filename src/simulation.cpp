@@ -371,7 +371,11 @@ void simulation::simulated_annealing()
 	vector<double> slice;
 	// vector< vector<double> > agav;
 	// agav.resize(N);
-
+	
+	FILE *h_fp = fopen("cluster_hist.out", "w");
+	FILE *d_fp = fopen("cluster_dat.out", "w");
+	int global_hist[N] = {0};
+	
 	for (int t=restart_t; t<Time; t++)
 	{
 		// Selects annealing schedule and calculates temperature
@@ -397,7 +401,7 @@ void simulation::simulated_annealing()
 		// 	loc_acc<<t<<" "<<accepted[7]/accepted[6]<<endl;
 		// }
 
-		if (t%50000==0)
+		if (t > 100000 && t%50000 == 0)
 		{
 			stringstream inter;
 			inter<<"Sys";
@@ -414,17 +418,25 @@ void simulation::simulated_annealing()
 			HK clump(crystal);				// Hoshen-Kopelman (HK) object for finding/counting clusters
 			clump.Find_Cluster_periodic();	// Identifies clusters
 
-			double avg_size=0.0;
-			int labl=clump.max_label();
-			for (int j=1; j<=labl; j++)		// Finds average cluster size
+			double avg_size = 0.0, avg_size_2 = 0.0;
+			// max_label = num_clusters?
+			int max_label = clump.max_label();
+			int num_clusters = clump.cluster_count();
+			for (int j = 1; j <= max_label; j++)		// Finds average cluster size
 			{
-				int nc=clump.cluster_size(j);
-				avg_size+=(double) nc;
+				int size = clump.cluster_size(j);
+				avg_size += size;
+				avg_size_2 += size *size;
 			}
-			Navg<<t<<" "<<avg_size/((double) clump.cluster_count())<<endl;
+			avg_size /= num_clusters;
+			avg_size_2 /= num_clusters;
+			Navg << t << " " << avg_size << endl;
+			fprintf(d_fp, "%15.15e %15.15e %d\n", avg_size, avg_size_2, num_clusters);
+			fflush(d_fp);
 
 			double meanD=0.0;
 			int lbl=clump.max_label();
+			int cluster_size_hist[N] = {0};
 			for (int i=1; i<=lbl; i++)		// Finds Mean distance to surface
 			{
 				int ncl=clump.cluster_size(i);
@@ -433,8 +445,23 @@ void simulation::simulated_annealing()
 				if (ncl>=1)
 				{
 					aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
+					cluster_size_hist[ncl]++;
+					global_hist[ncl]++;
 				}
 			}
+
+			for (int i = 1; i <= N; i++) {
+				if (cluster_size_hist[i] > 0)
+					fprintf(h_fp, "%d ", cluster_size_hist[i]);
+			}
+			fprintf(h_fp, "\n");
+
+			for (int i = 1; i <= N; i++) {
+				if (cluster_size_hist[i] > 0)
+					fprintf(h_fp, "%d ", i);
+			}
+			fprintf(h_fp, "\n");
+			fflush(h_fp);
 			aggfile.close();
 
 			MDVT<<t<<" "<<meanD/N<<endl;
@@ -453,7 +480,20 @@ void simulation::simulated_annealing()
 		// 	SC.close();
 		// }
 	}
+	
+	for (int i = 1; i <= N; i++) {
+		if (global_hist[i] > 0)
+			fprintf(h_fp, "%d ", global_hist[i]);
+	}
+	fprintf(h_fp, "\n");
 
+	for (int i = 1; i <= N; i++) {
+		if (global_hist[i] > 0)
+			fprintf(h_fp, "%d ", i);
+	}
+	fclose(d_fp);
+	fclose(h_fp);
+	
 	// ofstream AutoC;
 	// AutoC.open("Auto.dat");
 	// double chi_zero=0.0;
