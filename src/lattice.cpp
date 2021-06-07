@@ -423,10 +423,10 @@ void lattice::init(int lattice_size, int Number, gsl_rng * rng)
 	//std::cout<<occ.size()<<" "<<vac.size()<<" "<<occ.size()+vac.size()<<std::endl;
 }
 
-void lattice::square_init(int lattice_size, int W, gsl_rng * rng)
+void lattice::square_init(int lattice_size, int Num, int W, gsl_rng * rng)
 {
 	L=lattice_size;
-	N=W*W;
+	N=Num;
 	V=L*L;
 
 	site Null;
@@ -451,6 +451,32 @@ void lattice::square_init(int lattice_size, int W, gsl_rng * rng)
 			occ[count]=n; count++;
 		}
 	}
+
+	if (W*W>N){std::cout<<"Initial Square Larger than Number of Spins"<<std::endl;}
+	else
+	{
+		while (count!=N)
+		{
+			int n=gsl_rng_get(rng)%V;
+			if (n<0){n=n+V;}
+			if (lattice[n].occ==1) {continue;}
+
+			double theta = gsl_rng_uniform(rng)*6.283185307179586;
+
+			lattice[n].occ=1;
+			lattice[n].angle=theta;
+
+			occ[count]=n;
+			count++;
+		}
+	}
+
+	int total=0.0;
+	for (int k=0; k<lattice.size();k++)
+	{
+		total+=lattice[k].occ;
+	}
+	std::cout<<"Total Spins: "<<total<<std::endl;
 
 	int m=0;
 	for (int i=0; i<V; i++)
