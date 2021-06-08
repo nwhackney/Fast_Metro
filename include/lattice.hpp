@@ -20,7 +20,7 @@ class lattice
 public:
 
 	void init(int Lattice_size, int Number, gsl_rng * rng);
-	void square_init(int Lattice_size, int W, gsl_rng * rng);
+	void square_init(int Lattice_size, int Num, int W, gsl_rng * rng);
 	void rect_init(int Lx, int Ly, int W, gsl_rng * rng);
 	void ribbon_init(int L, int width, gsl_rng * rng);
 	void set_const(double j, double sig, double frustration);
