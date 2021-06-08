@@ -471,13 +471,6 @@ void lattice::square_init(int lattice_size, int Num, int W, gsl_rng * rng)
 		}
 	}
 
-	int total=0.0;
-	for (int k=0; k<lattice.size();k++)
-	{
-		total+=lattice[k].occ;
-	}
-	std::cout<<"Total Spins: "<<total<<std::endl;
-
 	int m=0;
 	for (int i=0; i<V; i++)
 	{
@@ -542,9 +535,9 @@ void lattice::rect_init(int Lx, int Ly, int W, gsl_rng * rng) // No longer works
 
 void lattice::ribbon_init(int Li, int width, gsl_rng * rng)
 {
-	
-	V=Li*Li;
-	L=Li;
+
+	V=(Li+7)*(Li+7);
+	L=Li+2;
 
 	N=Li*width;
 
@@ -557,11 +550,11 @@ void lattice::ribbon_init(int Li, int width, gsl_rng * rng)
 	vac.resize(V-N);
 
 	int count=0;
-	for (int i=10; i<10+width; i++)
+	for (int i=0; i<width; i++)
 	{
-		for (int j=0; j<L; j++)
+		for (int j=0; j<Li; j++)
 		{
-			int n = i*L+j;
+			int n = (i+1)*L+(j+1);
 			double theta = gsl_rng_uniform(rng)*6.283185307179586;
 
 			lattice[n].occ=1;
