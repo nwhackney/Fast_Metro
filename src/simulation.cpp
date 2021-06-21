@@ -231,14 +231,14 @@ double No_Step(double t, double beta)
 	double T=0.0,
 	       Temp=1.0/beta;
 
-	double interval=1.0-Temp;
+	double interval=1.0;
 
-	if (0.0<=t and t<=6000000.0)
+	if (0.0<=t and t<=2000000.0)
 	{
-		double x = clamp((t) / (6000000.0), 0.0, 1.0);
+		double x = clamp((t) / (2000000.0), 0.0, 1.0);
 		T=1.0-interval*x*x*x*(x*(x*6.0-15.0)+10.0);
 	}
-	else if (6000000.0<t and t<=8000000) {T=Temp;}
+	else if (2000000.0<t and t<=3000000) {T=0.0;}
 	
 	return T;
 }
@@ -372,9 +372,11 @@ void simulation::simulated_annealing()
 	// vector< vector<double> > agav;
 	// agav.resize(N);
 	
-	FILE *h_fp = fopen("cluster_hist.out", "w");
-	FILE *d_fp = fopen("cluster_dat.out", "w");
-	int global_hist[N] = {0};
+	//***************** Below commented because I don't want to deal
+	// FILE *h_fp = fopen("cluster_hist.out", "w");
+	// FILE *d_fp = fopen("cluster_dat.out", "w");
+	// int global_hist[N] = {0};
+	//****************
 	
 	for (int t=restart_t; t<Time; t++)
 	{
@@ -383,10 +385,10 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		//Temp=No_Step(t,Tf);
-		Temp=1.0/Tf;
+		Temp=No_Step(t,Tf);
+		//Temp=1.0/Tf;
 		
-		crystal.Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
+		crystal.Spin_Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
 		//Uni_AC(crystal, agav);
 
 		// if (t%1000==0)
@@ -403,69 +405,72 @@ void simulation::simulated_annealing()
 
 		if (t > 100000 && t%50000 == 0)
 		{
-			stringstream inter;
-			inter<<"Sys";
-			crystal.print_data(inter.str());
 
-			stringstream agg;
-			agg<<"agg_"<<t;
-			crystal.print_data(agg.str());
+			//************************** Below Commented because I don't want to deal with it
+
+			// stringstream inter;
+			// inter<<"Sys";
+			// crystal.print_data(inter.str());
+
+			// stringstream agg;
+			// agg<<"agg_"<<t;
+			// crystal.print_data(agg.str());
 
 
-			// Commented For Movie
+			// // Commented For Movie
 
-			ofstream aggfile;
-			aggfile.open(agg.str());
-			HK clump(crystal);				// Hoshen-Kopelman (HK) object for finding/counting clusters
-			clump.Find_Cluster_periodic();	// Identifies clusters
+			// ofstream aggfile;
+			// aggfile.open(agg.str());
+			// HK clump(crystal);				// Hoshen-Kopelman (HK) object for finding/counting clusters
+			// clump.Find_Cluster_periodic();	// Identifies clusters
 
-			double avg_size = 0.0, avg_size_2 = 0.0;
-			// max_label = num_clusters?
-			int max_label = clump.max_label();
-			int num_clusters = clump.cluster_count();
-			for (int j = 1; j <= max_label; j++)		// Finds average cluster size
-			{
-				int size = clump.cluster_size(j);
-				avg_size += size;
-				avg_size_2 += size *size;
-			}
-			avg_size /= num_clusters;
-			avg_size_2 /= num_clusters;
-			Navg << t << " " << avg_size << endl;
-			fprintf(d_fp, "%15.15e %15.15e %d\n", avg_size, avg_size_2, num_clusters);
-			fflush(d_fp);
+			// double avg_size = 0.0, avg_size_2 = 0.0;
+			// // max_label = num_clusters?
+			// int max_label = clump.max_label();
+			// int num_clusters = clump.cluster_count();
+			// for (int j = 1; j <= max_label; j++)		// Finds average cluster size
+			// {
+			// 	int size = clump.cluster_size(j);
+			// 	avg_size += size;
+			// 	avg_size_2 += size *size;
+			// }
+			// avg_size /= num_clusters;
+			// avg_size_2 /= num_clusters;
+			// Navg << t << " " << avg_size << endl;
+			// fprintf(d_fp, "%15.15e %15.15e %d\n", avg_size, avg_size_2, num_clusters);
+			// fflush(d_fp);
 
-			double meanD=0.0;
-			int lbl=clump.max_label();
-			int cluster_size_hist[N] = {0};
-			for (int i=1; i<=lbl; i++)		// Finds Mean distance to surface
-			{
-				int ncl=clump.cluster_size(i);
-				double dts = clump.distance_to_surface_periodic(i);
-				meanD += dts;
-				if (ncl>=1)
-				{
-					aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
-					cluster_size_hist[ncl]++;
-					global_hist[ncl]++;
-				}
-			}
+			// double meanD=0.0;
+			// int lbl=clump.max_label();
+			// int cluster_size_hist[N] = {0};
+			// for (int i=1; i<=lbl; i++)		// Finds Mean distance to surface
+			// {
+			// 	int ncl=clump.cluster_size(i);
+			// 	double dts = clump.distance_to_surface_periodic(i);
+			// 	meanD += dts;
+			// 	if (ncl>=1)
+			// 	{
+			// 		aggfile<<ncl<<" "<<dts/((double) ncl)<<endl;
+			// 		cluster_size_hist[ncl]++;
+			// 		global_hist[ncl]++;
+			// 	}
+			// }
 
-			for (int i = 1; i <= N; i++) {
-				if (cluster_size_hist[i] > 0)
-					fprintf(h_fp, "%d ", cluster_size_hist[i]);
-			}
-			fprintf(h_fp, "\n");
+			// for (int i = 1; i <= N; i++) {
+			// 	if (cluster_size_hist[i] > 0)
+			// 		fprintf(h_fp, "%d ", cluster_size_hist[i]);
+			// }
+			// fprintf(h_fp, "\n");
 
-			for (int i = 1; i <= N; i++) {
-				if (cluster_size_hist[i] > 0)
-					fprintf(h_fp, "%d ", i);
-			}
-			fprintf(h_fp, "\n");
-			fflush(h_fp);
-			aggfile.close();
+			// for (int i = 1; i <= N; i++) {
+			// 	if (cluster_size_hist[i] > 0)
+			// 		fprintf(h_fp, "%d ", i);
+			// }
+			// fprintf(h_fp, "\n");
+			// fflush(h_fp);
+			// aggfile.close();
 
-			MDVT<<t<<" "<<meanD/N<<endl;
+			// MDVT<<t<<" "<<meanD/N<<endl;
 
 			// Above Commented for Movie
 		}
@@ -480,20 +485,26 @@ void simulation::simulated_annealing()
 		// 	crystal.spin_correlation(SC);
 		// 	SC.close();
 		// }
-	}
-	
-	for (int i = 1; i <= N; i++) {
-		if (global_hist[i] > 0)
-			fprintf(h_fp, "%d ", global_hist[i]);
-	}
-	fprintf(h_fp, "\n");
 
-	for (int i = 1; i <= N; i++) {
-		if (global_hist[i] > 0)
-			fprintf(h_fp, "%d ", i);
+		//*********************
 	}
-	fclose(d_fp);
-	fclose(h_fp);
+
+     //*********************** Below Commented because I don't want to deal with is
+	
+	// for (int i = 1; i <= N; i++) {
+	// 	if (global_hist[i] > 0)
+	// 		fprintf(h_fp, "%d ", global_hist[i]);
+	// }
+	// fprintf(h_fp, "\n");
+
+	// for (int i = 1; i <= N; i++) {
+	// 	if (global_hist[i] > 0)
+	// 		fprintf(h_fp, "%d ", i);
+	// }
+	// fclose(d_fp);
+	// fclose(h_fp);
+
+	//*****************************
 	
 	// ofstream AutoC;
 	// AutoC.open("Auto.dat");
