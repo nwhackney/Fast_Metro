@@ -306,8 +306,8 @@ void simulation::simulated_annealing()
 	else
 	{
 		//crystal.init(L,N,r);
-		crystal.square_init(L,N,Num_Rep,r);
-		//crystal.ribbon_init(L,Num_Rep,r);
+		//crystal.square_init(L,N,Num_Rep,r);
+		crystal.ribbon_init(L,Num_Rep,r);
 		crystal.print_data("init");	
 	}
 
@@ -410,6 +410,7 @@ void simulation::simulated_annealing()
 			stringstream agg;
 			agg<<"agg_"<<t;
 			crystal.print_data(agg.str());
+
 
 			// Commented For Movie
 
