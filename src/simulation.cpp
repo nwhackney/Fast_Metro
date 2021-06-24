@@ -306,8 +306,8 @@ void simulation::simulated_annealing()
 	else
 	{
 		//crystal.init(L,N,r);
-		//crystal.square_init(L,N,Num_Rep,r);
-		crystal.ribbon_init(L,Num_Rep,r);
+		crystal.square_init(L,N,Num_Rep,r);
+		//crystal.ribbon_init(L,Num_Rep,r);
 		crystal.print_data("init");	
 	}
 
@@ -385,10 +385,10 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		Temp=No_Step(t,Tf);
-		//Temp=1.0/Tf;
+		//Temp=No_Step(t,Tf);
+		Temp=1.0/Tf;
 		
-		crystal.Spin_Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
+		crystal.Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
 		//Uni_AC(crystal, agav);
 
 		// if (t%1000==0)
@@ -408,13 +408,13 @@ void simulation::simulated_annealing()
 
 			//************************** Below Commented because I don't want to deal with it
 
-			// stringstream inter;
-			// inter<<"Sys";
-			// crystal.print_data(inter.str());
+			stringstream inter;
+			inter<<"Sys";
+			crystal.print_data(inter.str());
 
-			// stringstream agg;
-			// agg<<"agg_"<<t;
-			// crystal.print_data(agg.str());
+			stringstream agg;
+			agg<<"agg_"<<t;
+			crystal.print_data(agg.str());
 
 
 			// // Commented For Movie
