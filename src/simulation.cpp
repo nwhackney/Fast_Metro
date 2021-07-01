@@ -373,9 +373,9 @@ void simulation::simulated_annealing()
 	// agav.resize(N);
 	
 	//***************** Below commented because I don't want to deal
-	// FILE *h_fp = fopen("cluster_hist.out", "w");
-	// FILE *d_fp = fopen("cluster_dat.out", "w");
-	// int global_hist[N] = {0};
+	FILE *h_fp = fopen("cluster_hist.out", "w");
+	FILE *d_fp = fopen("cluster_dat.out", "w");
+	int global_hist[N] = {0};
 	//****************
 	
 	for (int t=restart_t; t<Time; t++)
@@ -491,18 +491,18 @@ void simulation::simulated_annealing()
 
      //*********************** Below Commented because I don't want to deal with is
 	
-	// for (int i = 1; i <= N; i++) {
-	// 	if (global_hist[i] > 0)
-	// 		fprintf(h_fp, "%d ", global_hist[i]);
-	// }
-	// fprintf(h_fp, "\n");
+	for (int i = 1; i <= N; i++) {
+		if (global_hist[i] > 0)
+			fprintf(h_fp, "%d ", global_hist[i]);
+	}
+	fprintf(h_fp, "\n");
 
-	// for (int i = 1; i <= N; i++) {
-	// 	if (global_hist[i] > 0)
-	// 		fprintf(h_fp, "%d ", i);
-	// }
-	// fclose(d_fp);
-	// fclose(h_fp);
+	for (int i = 1; i <= N; i++) {
+		if (global_hist[i] > 0)
+			fprintf(h_fp, "%d ", i);
+	}
+	fclose(d_fp);
+	fclose(h_fp);
 
 	//*****************************
 	
