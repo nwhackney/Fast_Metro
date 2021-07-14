@@ -308,6 +308,7 @@ void simulation::simulated_annealing()
 		//crystal.init(L,N,r);
 		crystal.square_init(L,N,Num_Rep,r);
 		//crystal.ribbon_init(L,Num_Rep,r);
+		//crystal.hex_init(L,Num_Rep,r);
 		crystal.print_data("init");	
 	}
 
@@ -373,9 +374,9 @@ void simulation::simulated_annealing()
 	// agav.resize(N);
 	
 	//***************** Below commented because I don't want to deal
-	FILE *h_fp = fopen("cluster_hist.out", "w");
-	FILE *d_fp = fopen("cluster_dat.out", "w");
-	int global_hist[N] = {0};
+	// FILE *h_fp = fopen("cluster_hist.out", "w");
+	// FILE *d_fp = fopen("cluster_dat.out", "w");
+	// int global_hist[N] = {0};
 	//****************
 	
 	for (int t=restart_t; t<Time; t++)
@@ -385,10 +386,10 @@ void simulation::simulated_annealing()
 		// Temp=(1.0/cosh(w*slope*((double) t)))+Tf;
 		//Temp=Step_Temp_Longer(t);
 		//Temp=QUENCH(t,Tf);
-		//Temp=No_Step(t,Tf);
-		Temp=1.0/Tf;
+		Temp=No_Step(t,Tf);
+		//Temp=1.0/Tf;
 		
-		crystal.Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
+		crystal.Spin_Metropolis(Temp,Edat,accepted, r); // runs monte carlo step
 		//Uni_AC(crystal, agav);
 
 		// if (t%1000==0)
@@ -408,13 +409,13 @@ void simulation::simulated_annealing()
 
 			//************************** Below Commented because I don't want to deal with it
 
-			stringstream inter;
-			inter<<"Sys";
-			crystal.print_data(inter.str());
+			// stringstream inter;
+			// inter<<"Sys";
+			// crystal.print_data(inter.str());
 
-			stringstream agg;
-			agg<<"agg_"<<t;
-			crystal.print_data(agg.str());
+			// stringstream agg;
+			// agg<<"agg_"<<t;
+			// crystal.print_data(agg.str());
 
 
 			// // Commented For Movie
@@ -491,18 +492,18 @@ void simulation::simulated_annealing()
 
      //*********************** Below Commented because I don't want to deal with is
 	
-	for (int i = 1; i <= N; i++) {
-		if (global_hist[i] > 0)
-			fprintf(h_fp, "%d ", global_hist[i]);
-	}
-	fprintf(h_fp, "\n");
+	// for (int i = 1; i <= N; i++) {
+	// 	if (global_hist[i] > 0)
+	// 		fprintf(h_fp, "%d ", global_hist[i]);
+	// }
+	// fprintf(h_fp, "\n");
 
-	for (int i = 1; i <= N; i++) {
-		if (global_hist[i] > 0)
-			fprintf(h_fp, "%d ", i);
-	}
-	fclose(d_fp);
-	fclose(h_fp);
+	// for (int i = 1; i <= N; i++) {
+	// 	if (global_hist[i] > 0)
+	// 		fprintf(h_fp, "%d ", i);
+	// }
+	// fclose(d_fp);
+	// fclose(h_fp);
 
 	//*****************************
 	
